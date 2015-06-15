@@ -72,7 +72,7 @@ class About(models.Model):
     added_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
-        return self.text
+        return self.about
 
 
 class Location(models.Model):
@@ -83,7 +83,7 @@ class Location(models.Model):
     added_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
-        return self.text
+        return self.location
 
 
 class Board(models.Model):
@@ -102,7 +102,7 @@ class Board(models.Model):
     added_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
-        return self.username
+        return self.name
 
 
 class Keyword(models.Model):
@@ -138,4 +138,4 @@ class Comment(models.Model):
     added_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
-        return self.text
+        return self.comment
