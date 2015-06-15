@@ -18,7 +18,7 @@ from store.resources import (
 @admin.register(Email)
 class EmailAdmin(ImportExportModelAdmin, admin.ModelAdmin):
 
-    '''Admin integration for emails.'''
+    '''Admin integration for email.'''
 
     resource_class = EmailResource
     search_fields = ('address', )
@@ -35,7 +35,7 @@ class ProxyAdmin(ImportExportModelAdmin, admin.ModelAdmin):
 @admin.register(UserAgent)
 class UserAgentAdmin(ImportExportModelAdmin, admin.ModelAdmin):
 
-    '''Admin integration for user agent.'''
+    '''Admin integration for user-agent.'''
 
     resource_class = UserAgentResource
     formfield_overrides = {models.TextField: {'widget': forms.TextInput}}
@@ -65,7 +65,7 @@ class LastNameAdmin(ImportExportModelAdmin, admin.ModelAdmin):
 @admin.register(About)
 class AboutAdmin(ImportExportModelAdmin, admin.ModelAdmin):
 
-    '''Admin integration for about.'''
+    '''Admin integration for about user.'''
 
     resource_class = AboutResource
     search_fields = ('about', )

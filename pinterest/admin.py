@@ -1,7 +1,6 @@
-from django.contrib import admin
-
 from django import forms
 from django.db import models
+from django.contrib import admin
 
 from pinterest.models import User, Board
 from pinterest.forms import UserAdminForm
@@ -24,7 +23,7 @@ class UserAdmin(admin.ModelAdmin):
     search_fields = ('name', 'username')
     list_display = (
         'name', 'username', 'board_count', 'repin_count', 'like_count',
-        'comment_count', 'following_count'
+        'comment_count', 'followers_count', 'following_count'
     )
     form = UserAdminForm
     inlines = (BoardInline, )
@@ -36,6 +35,7 @@ class UserAdmin(admin.ModelAdmin):
             repin_count=models.Count('repins'),
             like_count=models.Count('likes'),
             comment_count=models.Count('comments'),
+            followers_count=models.Count('followers'),
             following_count=models.Count('following')
         )
 
@@ -43,26 +43,36 @@ class UserAdmin(admin.ModelAdmin):
         '''Return user board count.'''
         return user.board_count
 
+    board_count.admin_order_field = 'board_count'
+
     def repin_count(self, user):
         '''Return user repin count.'''
         return user.repin_count
+
+    repin_count.admin_order_field = 'repin_count'
 
     def like_count(self, user):
         '''Return user like count.'''
         return user.like_count
 
+    like_count.admin_order_field = 'like_count'
+
     def comment_count(self, user):
         '''Return user comment count.'''
         return user.comment_count
+
+    comment_count.admin_order_field = 'comment_count'
+
+    def followers_count(self, user):
+        '''Return user followers count.'''
+        return user.followers_count
+
+    followers_count.admin_order_field = 'followers_count'
 
     def following_count(self, user):
         '''Return user following count.'''
         return user.following_count
 
-    board_count.admin_order_field = 'board_count'
-    repin_count.admin_order_field = 'repin_count'
-    like_count.admin_order_field = 'like_count'
-    comment_count.admin_order_field = 'comment_count'
     following_count.admin_order_field = 'following_count'
 
 
@@ -71,6 +81,16 @@ class BoardAdmin(admin.ModelAdmin):
 
     '''Admin integration for board.'''
 
-    search_fields = ('name', 'description')
-    list_filter = ('category', )
-    list_display = ('name', 'description', 'category', 'user')
+    search_fields = ('name', )
+    list_filter = ('category', 'description')
+    list_display = ('name', 'description', 'category', 'user', 'pin_count')
+
+    def get_queryset(self, request):
+        '''Override model admin get_queryset. Return annotated queryset.'''
+        return Board.objects.annotate(pin_count=models.Count('pins'))
+
+    def pin_count(self, board):
+        '''Return board pin count.'''
+        return board.pin_count
+
+    pin_count.admin_order_field = 'pin_count'

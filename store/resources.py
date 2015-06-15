@@ -53,7 +53,7 @@ class LastNameResource(resources.ModelResource):
 
 class AboutResource(resources.ModelResource):
 
-    '''Resource class for about.'''
+    '''Resource class for about user.'''
 
     class Meta:
         model = About

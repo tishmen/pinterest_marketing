@@ -15,7 +15,7 @@ class UserAdminForm(forms.ModelForm):
         fields = (
             'proxy', 'user_agent', 'email', 'password', 'name', 'age',
             'username', 'photo', 'about', 'location', 'repins', 'likes',
-            'comments', 'following'
+            'comments', 'followers', 'following'
         )
 
     def __init__(self, *args, **kwargs):

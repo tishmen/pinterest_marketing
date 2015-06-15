@@ -58,6 +58,9 @@ class User(models.Model):
     repins = models.ManyToManyField('Id', related_name='+', blank=True)
     likes = models.ManyToManyField('Id', related_name='+', blank=True)
     comments = models.ManyToManyField('Id', related_name='+', blank=True)
+    followers = models.ManyToManyField(
+        'Username', related_name='+', blank=True
+    )
     following = models.ManyToManyField(
         'Username', related_name='+', blank=True
     )
@@ -111,6 +114,7 @@ class Board(models.Model):
         choices=((category, category) for category in CATEGORIES)
     )
     description = models.CharField(max_length=500)
+    pins = models.ManyToManyField('Id', related_name='+', blank=True)
     added_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):

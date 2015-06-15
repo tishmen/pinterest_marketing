@@ -8,10 +8,10 @@ class RandomEmailManager(models.Manager):
     '''Custom manager for email. Return available emails in random order.'''
 
     def get_queryset(self):
-        '''Override get_queryset model manager method.'''
+        '''Override model manager get_queryset method.'''
         ids = [user.email.id for user in User.objects.all()]
-        qs = super(RandomEmailManager, self).get_queryset()
-        return qs.exclude(id__in=ids).order_by('?')
+        queryset = super(RandomEmailManager, self).get_queryset()
+        return queryset.exclude(id__in=ids).order_by('?')
 
 
 class RandomProxyManager(models.Manager):
@@ -19,10 +19,10 @@ class RandomProxyManager(models.Manager):
     '''Custom manager for proxy. Return available proxies in random order.'''
 
     def get_queryset(self):
-        '''Override get_queryset model manager method.'''
+        '''Override model manager get_queryset method.'''
         ids = [user.proxy.id for user in User.objects.all() if user.proxy]
-        qs = super(RandomProxyManager, self).get_queryset()
-        return qs.exclude(id__in=ids).order_by('?')
+        queryset = super(RandomProxyManager, self).get_queryset()
+        return queryset.exclude(id__in=ids).order_by('?')
 
 
 class RandomManager(models.Manager):
@@ -30,8 +30,9 @@ class RandomManager(models.Manager):
     '''Custom manager. Return rows in random order.'''
 
     def get_queryset(self):
-        '''Override get_queryset model manager method.'''
-        return super(RandomManager, self).get_queryset().order_by('?')
+        '''Override model manager get_queryset method.'''
+        queryset = super(RandomManager, self).get_queryset()
+        return queryset.order_by('?')
 
 
 class Email(models.Model):
@@ -70,7 +71,7 @@ class Proxy(models.Model):
 
 class UserAgent(models.Model):
 
-    '''Main storage for user agent.'''
+    '''Main storage for user-agent.'''
 
     string = models.TextField(unique=True)
     added_at = models.DateTimeField(auto_now_add=True)
@@ -112,7 +113,7 @@ class LastName(models.Model):
 
 class About(models.Model):
 
-    '''Main storage for about.'''
+    '''Main storage for about user.'''
 
     about = models.CharField(max_length=160, unique=True)
     added_at = models.DateTimeField(auto_now_add=True)
