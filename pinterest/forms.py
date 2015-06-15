@@ -2,7 +2,7 @@ from django import forms
 
 from pinterest.models import User
 from store.models import (
-    Proxy, UserAgent, Email, FirstName, LastName, About, Location
+    About, Email, FirstName, LastName, Location, Proxy, UserAgent
 )
 
 

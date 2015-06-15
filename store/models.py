@@ -1,6 +1,6 @@
 from django.db import models
 
-from pinterest.models import User, CATEGORIES
+from pinterest.models import CATEGORIES, User
 
 
 class RandomEmailManager(models.Manager):

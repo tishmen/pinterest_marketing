@@ -3,7 +3,6 @@ import random
 import string
 
 from constance import config
-
 from django.db import models
 
 from pinterest_marketing.settings import PHOTO_DIR

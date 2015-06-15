@@ -1,9 +1,9 @@
 from django import forms
-from django.db import models
 from django.contrib import admin
+from django.db import models
 
-from pinterest.models import User, Board
 from pinterest.forms import UserAdminForm
+from pinterest.models import Board, User
 
 
 class BoardInline(admin.StackedInline):

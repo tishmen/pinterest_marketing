@@ -1,17 +1,16 @@
+from django import forms
+from django.contrib import admin
+from django.db import models
 from import_export.admin import ImportExportModelAdmin
 
-from django import forms
-from django.db import models
-from django.contrib import admin
-
 from store.models import (
-    Email, Proxy, UserAgent, FirstName, LastName, About, Location, Board,
-    Keyword, Comment
+    About, Board, Comment, Email, FirstName, Keyword, LastName, Location,
+    Proxy, UserAgent
 )
 from store.resources import (
-    EmailResource, ProxyResource, UserAgentResource, FirstNameResource,
-    LastNameResource, AboutResource, LocationResource, BoardResource,
-    KeywordResource, CommentResource
+    AboutResource, BoardResource, CommentResource, EmailResource,
+    FirstNameResource, KeywordResource, LastNameResource, LocationResource,
+    ProxyResource, UserAgentResource
 )
 
 
