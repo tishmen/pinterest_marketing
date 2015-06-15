@@ -5,8 +5,8 @@ from django.db import models
 from pinterest.forms import UserAdminForm
 from pinterest.models import Board, User
 from pinterest.tasks import (
-    create_user_task, confirm_email_task, login_task, create_boards_task,
-    repin_task, like_task, comment_task, follow_task, unfollow_task
+    comment_task, confirm_email_task, create_boards_task, create_user_task,
+    follow_task, like_task, login_task, repin_task, unfollow_task
 )
 
 
