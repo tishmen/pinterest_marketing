@@ -5,6 +5,7 @@ import traceback
 from celery import shared_task
 from constance import config
 
+from pinterest.models import User
 from pinterest.scripts import (
     CommentScript, ConfirmEmailScript, CreateBoardsScript, CreateUserScript,
     FollowScript, LikeScript, LoginScript, RepinScript, UnfollowScript
@@ -151,3 +152,38 @@ def unfollow_task(self, user):
     except Exception:
         log.error('Traceback: %s', traceback.format_exc())
         raise
+
+
+@shared_task(bind=True)
+def repin_periodic_task(self, user):
+    '''Periodic celery task for repining random users.'''
+    for user in User.available.all():
+        repin_task.delay(user)
+
+
+@shared_task(bind=True)
+def like_periodic_task(self, user):
+    '''Periodic celery task for liking random users.'''
+    for user in User.available.all():
+        like_task.delay(user)
+
+
+@shared_task(bind=True)
+def comment_periodic_task(self, user):
+    '''Periodic celery task for commenting on random users.'''
+    for user in User.available.all():
+        comment_task.delay(user)
+
+
+@shared_task(bind=True)
+def follow_periodic_task(self, user):
+    '''Periodic celery task for following random users.'''
+    for user in User.available.all():
+        follow_task.delay(user)
+
+
+@shared_task(bind=True)
+def unfollow_periodic_task(self, user):
+    '''Periodic celery task for unfollowing random users.'''
+    for user in User.available.all():
+        unfollow_task.delay(user)

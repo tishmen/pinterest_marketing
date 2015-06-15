@@ -18,6 +18,16 @@ CATEGORIES = [
 ]
 
 
+class AvailableUserManager(models.Manager):
+
+    '''Custom manager for user. Return available users.'''
+
+    def get_queryset(self):
+        '''Override model manager get_queryset method.'''
+        queryset = super(AvailableUserManager, self).get_queryset()
+        return queryset.exclude(cookies='[]')
+
+
 class Id(models.Model):
 
     '''Main storage for id.'''
@@ -65,6 +75,9 @@ class User(models.Model):
         'Username', related_name='+', blank=True
     )
     added_at = models.DateTimeField(auto_now_add=True)
+
+    objects = models.Manager()
+    available = AvailableUserManager()
 
     @staticmethod
     def get_name(first, last):
