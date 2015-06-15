@@ -5,3 +5,4 @@ migrations
 *.sublime-workspace
 log
 import_export
+photo
