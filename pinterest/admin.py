@@ -30,6 +30,7 @@ class UserAdmin(admin.ModelAdmin):
     inlines = (BoardInline, )
 
     def get_queryset(self, request):
+        '''Override model admin get_queryset. Return annotated queryset.'''
         return User.objects.annotate(
             board_count=models.Count('board'),
             repin_count=models.Count('repins'),
@@ -38,20 +39,25 @@ class UserAdmin(admin.ModelAdmin):
             following_count=models.Count('following')
         )
 
-    def board_count(self, obj):
-        return obj.board_count
+    def board_count(self, user):
+        '''Return user board count.'''
+        return user.board_count
 
-    def repin_count(self, obj):
-        return obj.repin_count
+    def repin_count(self, user):
+        '''Return user repin count.'''
+        return user.repin_count
 
-    def like_count(self, obj):
-        return obj.like_count
+    def like_count(self, user):
+        '''Return user like count.'''
+        return user.like_count
 
-    def comment_count(self, obj):
-        return obj.comment_count
+    def comment_count(self, user):
+        '''Return user comment count.'''
+        return user.comment_count
 
-    def following_count(self, obj):
-        return obj.following_count
+    def following_count(self, user):
+        '''Return user following count.'''
+        return user.following_count
 
     board_count.admin_order_field = 'board_count'
     repin_count.admin_order_field = 'repin_count'

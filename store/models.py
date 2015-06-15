@@ -3,28 +3,26 @@ from django.db import models
 from pinterest.models import User, CATEGORIES
 
 
-class AvailableEmailManager(models.Manager):
+class RandomEmailManager(models.Manager):
 
-    '''Custom manager for email. Return available emails.'''
+    '''Custom manager for email. Return available emails in random order.'''
 
     def get_queryset(self):
         '''Override get_queryset model manager method.'''
         ids = [user.email.id for user in User.objects.all()]
-        return super(AvailableEmailManager, self).get_queryset().exclude(
-            id__in=ids
-        )
+        qs = super(RandomEmailManager, self).get_queryset()
+        return qs.exclude(id__in=ids).order_by('?')
 
 
-class AvailableProxyManager(models.Manager):
+class RandomProxyManager(models.Manager):
 
-    '''Custom manager for proxy. Return available proxies.'''
+    '''Custom manager for proxy. Return available proxies in random order.'''
 
     def get_queryset(self):
         '''Override get_queryset model manager method.'''
         ids = [user.proxy.id for user in User.objects.all() if user.proxy]
-        return super(AvailableProxyManager, self).get_queryset().exclude(
-            id__in=ids
-        )
+        qs = super(RandomProxyManager, self).get_queryset()
+        return qs.exclude(id__in=ids).order_by('?')
 
 
 class RandomManager(models.Manager):
@@ -45,7 +43,7 @@ class Email(models.Model):
     added_at = models.DateTimeField(auto_now_add=True)
 
     objects = models.Manager()
-    available = AvailableEmailManager()
+    random = RandomEmailManager()
 
     def __str__(self):
         return self.address
@@ -64,7 +62,7 @@ class Proxy(models.Model):
     added_at = models.DateTimeField(auto_now_add=True)
 
     objects = models.Manager()
-    available = AvailableProxyManager()
+    random = RandomProxyManager()
 
     def __str__(self):
         return '{}:{}'.format(self.host, self.port)

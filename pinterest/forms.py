@@ -8,7 +8,7 @@ from store.models import (
 
 class UserAdminForm(forms.ModelForm):
 
-    '''Custom user admin form with set initial values.'''
+    '''Custom user admin form with pre-set initial values.'''
 
     class Meta:
         model = User
@@ -19,7 +19,8 @@ class UserAdminForm(forms.ModelForm):
         )
 
     def __init__(self, *args, **kwargs):
-        kwargs.update(initial=self.get_initial())
+        if not kwargs.get('instance'):
+            kwargs.update(initial=self.get_initial())
         super(UserAdminForm, self).__init__(*args, **kwargs)
 
     def get_initial(self):
@@ -27,9 +28,9 @@ class UserAdminForm(forms.ModelForm):
         name = User.get_name(FirstName.random.first(), LastName.random.first())
         age = User.get_age()
         return {
-            'proxy': Proxy.available.order_by('?').first(),
+            'proxy': Proxy.random.first(),
             'user_agent': UserAgent.random.first(),
-            'email': Email.available.order_by('?').first(),
+            'email': Email.random.first(),
             'password': User.get_password(),
             'name': name,
             'age': age,
