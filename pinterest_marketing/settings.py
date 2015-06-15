@@ -5,6 +5,8 @@ import djcelery
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
+PHOTO_DIR = os.path.join(BASE_DIR, 'store', 'photo')
+
 SECRET_KEY = '(zj-3#0@5z=_lnm!!%+$u4oqy=msid9*2dy9_un3-uwb^v^766'
 
 DEBUG = True
@@ -87,7 +89,7 @@ LOGGING = {
         'file': {
             'level': 'DEBUG',
             'class': 'logging.FileHandler',
-            'filename': os.path.join(BASE_DIR, 'debug.log'),
+            'filename': os.path.join(BASE_DIR, 'log'),
         },
     },
     'loggers': {
