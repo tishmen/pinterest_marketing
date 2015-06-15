@@ -106,3 +106,8 @@ CELERY_SEND_EVENTS = True
 CELERYBEAT_SCHEDULER = 'djcelery.schedulers.DatabaseScheduler'
 
 djcelery.setup_loader()
+
+CONSTANCE_CONFIG = {
+    'MINIMUM_AGE': (20, 'Minimum user age'),
+    'MAXIMUM_AGE': (50, 'Maximum user age'),
+}

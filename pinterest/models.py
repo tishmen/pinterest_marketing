@@ -1,3 +1,9 @@
+import os
+import random
+import string
+
+from constance import config
+
 from django.db import models
 
 from pinterest_marketing.settings import PHOTO_DIR
@@ -44,16 +50,48 @@ class User(models.Model):
     email = models.OneToOneField('store.Email')
     password = models.CharField(max_length=10)
     name = models.TextField()
-    username = models.CharField(max_length=15, unique=True)
     age = models.PositiveIntegerField()
+    username = models.CharField(max_length=15, unique=True)
     photo = models.FilePathField(path=PHOTO_DIR, unique=True)
     about = models.CharField(max_length=160)
     location = models.TextField()
-    repins = models.ManyToManyField('Id', related_name='+')
-    likes = models.ManyToManyField('Id', related_name='+')
-    comments = models.ManyToManyField('Id', related_name='+')
-    following = models.ManyToManyField('Username', related_name='+')
+    repins = models.ManyToManyField('Id', related_name='+', blank=True)
+    likes = models.ManyToManyField('Id', related_name='+', blank=True)
+    comments = models.ManyToManyField('Id', related_name='+', blank=True)
+    following = models.ManyToManyField(
+        'Username', related_name='+', blank=True
+    )
     added_at = models.DateTimeField(auto_now_add=True)
+
+    @staticmethod
+    def get_name(first, last):
+        '''Return full name.'''
+        return '{} {}'.format(first, last)
+
+    @staticmethod
+    def get_age():
+        '''Return random age.'''
+        return random.randint(config.MINIMUM_AGE, config.MAXIMUM_AGE)
+
+    @staticmethod
+    def get_password():
+        '''Return random alphanumeric password.'''
+        alphanumerics = string.ascii_letters + string.digits
+        return ''.join(random.choice(alphanumerics) for _ in range(10))
+
+    @staticmethod
+    def get_username(name, age):
+        '''Return username from name and age.'''
+        return '{}{}'.format(name.replace(' ', '').lower()[:11], age)
+
+    @staticmethod
+    def get_photo():
+        '''Return available photo.'''
+        photos = [os.path.join(PHOTO_DIR, f) for f in os.listdir(PHOTO_DIR)]
+        bound = [user.photo for user in User.objects.all()]
+        available = [photo for photo in photos if photo not in bound]
+        if available:
+            return random.choice(available)
 
     def __str__(self):
         return self.username
@@ -76,4 +114,4 @@ class Board(models.Model):
     added_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
-        return self.username
+        return self.name
