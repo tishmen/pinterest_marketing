@@ -1,16 +1,16 @@
 import logging
-import traceback
 import random
+import traceback
 
 from celery import shared_task
 from constance import config
 
 from pinterest.scripts import (
-    CreateUserScript, LoginScript, CreateBoardsScript, RepinScript, LikeScript,
-    CommentScript, FollowScript, UnfollowScript
+    CommentScript, ConfirmEmailScript, CreateBoardsScript, CreateUserScript,
+    FollowScript, LikeScript, LoginScript, RepinScript, UnfollowScript
 )
-from store.models import Keyword, Comment, Board
-from pinterest_marketing.lock import lock, LockException
+from pinterest_marketing.lock import LockException, lock
+from store.models import Board, Comment, Keyword
 
 log = logging.getLogger('pinterest_marketing')
 
@@ -21,6 +21,20 @@ def create_user_task(self, user):
     try:
         with lock(user.id):
             CreateUserScript()(user)
+    except Exception:
+        log.error('Traceback: %s', traceback.format_exc())
+        raise
+
+
+@shared_task(bind=True, max_retries=1)
+def confirm_email_task(self, user):
+    '''Celery task for confirming pinterest email.'''
+    try:
+        with lock(user.id):
+            ConfirmEmailScript()(user)
+    except LockException:
+        log.warn('Retrying task %d time', self.request.retries)
+        self.retry(countdown=100)
     except Exception:
         log.error('Traceback: %s', traceback.format_exc())
         raise
@@ -40,7 +54,7 @@ def login_task(self, user):
         raise
 
 
-@shared_task(bind=True)
+@shared_task(bind=True, max_retries=1)
 def create_boards_task(self, user):
     '''Celery task for creating pinterest boards.'''
     try:

@@ -14,6 +14,15 @@ class CreateUserScript(Browser):
         log.debug('Called CreateUserScript with args %s', user)
 
 
+class ConfirmEmailScript(Browser):
+
+    '''Confirm email on pinterest.'''
+
+    def __call__(self, user):
+        '''Run selenium script for ConfirmEmailScript.'''
+        log.debug('Called ConfirmEmailScript with args %s', user)
+
+
 class LoginScript(Browser):
 
     '''Login user on pinterest.'''

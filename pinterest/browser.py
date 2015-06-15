@@ -1,8 +1,8 @@
 import json
 import logging
+import random
 import re
 import time
-import random
 
 from selenium import webdriver
 
