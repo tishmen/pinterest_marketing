@@ -109,4 +109,21 @@ djcelery.setup_loader()
 CONSTANCE_CONFIG = {
     'MINIMUM_AGE': (20, 'Minimum user age'),
     'MAXIMUM_AGE': (50, 'Maximum user age'),
+    'MINIMUM_REPIN_COUNT': (1, 'Minimum repin count for pin'),
+    'MINIMUM_LIKE_COUNT': (1, 'Minimum like count for pin'),
+    'MINIMUM_COMMENT_COUNT': (1, 'Minimum comment count for pin'),
+    'MINIMUM_PIN_COUNT': (1, 'Minimum pin count for board'),
+
+    'MINIMUM_BOARD': (1, 'Minimum boards per task run'),
+    'MAXIMUM_BOARD': (1, 'Maximum boards per task run'),
+    'MINIMUM_LIKE': (1, 'Minimum likes per task run'),
+    'MAXIMUM_LIKE': (1, 'Maximum likes per task run'),
+    'MINIMUM_COMMENT': (1, 'Minimum comments per task run'),
+    'MAXIMUM_COMMENT': (1, 'Maximum comments per task run'),
+    'MINIMUM_REPIN': (1, 'Minimum repins per task run'),
+    'MAXIMUM_REPIN': (1, 'Maximum repins per task run'),
+    'MINIMUM_FOLLOW': (1, 'Minimum follows per task run'),
+    'MAXIMUM_FOLLOW': (1, 'Maximum follows per task run'),
+    'MINIMUM_UNFOLLOW': (1, 'Minimum unfollows per task run'),
+    'MAXIMUM_UNFOLLOW': (1, 'Maximum unfollows per task run'),
 }
