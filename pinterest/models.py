@@ -54,6 +54,7 @@ class User(models.Model):
     photo = models.FilePathField(path=PHOTO_DIR, unique=True)
     about = models.CharField(max_length=160)
     location = models.TextField()
+    cookies = models.TextField(default='[]')
     repins = models.ManyToManyField('Id', related_name='+', blank=True)
     likes = models.ManyToManyField('Id', related_name='+', blank=True)
     comments = models.ManyToManyField('Id', related_name='+', blank=True)

@@ -12,11 +12,7 @@ class UserAdminForm(forms.ModelForm):
 
     class Meta:
         model = User
-        fields = (
-            'proxy', 'user_agent', 'email', 'password', 'name', 'age',
-            'username', 'photo', 'about', 'location', 'repins', 'likes',
-            'comments', 'followers', 'following'
-        )
+        exclude = ('cookies', )
 
     def __init__(self, *args, **kwargs):
         if not kwargs.get('instance'):
