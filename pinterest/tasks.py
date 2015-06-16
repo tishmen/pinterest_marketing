@@ -6,7 +6,7 @@ from celery import shared_task
 from constance import config
 
 from pinterest.models import User
-from pinterets.mailbox import MailBox, EmailException
+from pinterest.mailbox import MailBox, EmailException
 from pinterest.scripts import (
     CommentScript, ConfirmEmailScript, CreateBoardsScript, CreateUserScript,
     FollowScript, LikeScript, LoginScript, RepinScript, ScrapeScript,

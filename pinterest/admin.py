@@ -32,7 +32,7 @@ class UserAdmin(admin.ModelAdmin):
     )
     actions = (
         'login_action', 'create_user_action', 'confirm_email_action',
-        'create_boards_action', 'sync_task', 'repin_action', 'like_action',
+        'create_boards_action', 'sync_action', 'repin_action', 'like_action',
         'comment_action', 'follow_action', 'unfollow_action', 'scrape_action'
     )
     form = UserAdminForm

@@ -24,7 +24,7 @@ class MailBox(object):
         self.imap = imaplib.IMAP4_SSL(host, port)
         self.imap.login(email.address, email.password)
         self.imap.select('"Inbox"')
-        log.debug('Loged in to %s as %s', host)
+        log.debug('Loged in to %s as %s', host, email.address)
 
     def get_html(self, sender='confirm@account.pinterest.com'):
         '''Return pinterest email message html.'''
