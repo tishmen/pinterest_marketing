@@ -5,6 +5,7 @@ import re
 import time
 
 from selenium import webdriver
+from selenium.webdriver.support.ui import Select
 
 log = logging.getLogger('pinterest_marketing')
 
@@ -71,3 +72,9 @@ class Browser(object):
         element.send_keys(text)
         log.debug('Sent %s to %s', text, name)
         time.sleep(random.uniform(5, 10))
+
+    def select(self, name, element, value):
+        '''Select option by value.'''
+        options = Select(element)
+        options.select_by_value(value)
+        log.debug('Selected %s for %s', value, name)
