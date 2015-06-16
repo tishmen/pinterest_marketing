@@ -6,6 +6,7 @@ from celery import shared_task
 from constance import config
 
 from pinterest.models import User
+from pinterets.mailbox import MailBox, EmailException
 from pinterest.scripts import (
     CommentScript, ConfirmEmailScript, CreateBoardsScript, CreateUserScript,
     FollowScript, LikeScript, LoginScript, RepinScript, ScrapeScript,
@@ -46,8 +47,14 @@ def create_user_task(self, user):
 def confirm_email_task(self, user):
     '''Celery task for confirming pinterest email.'''
     try:
+        mailbox = MailBox()
+        mailbox.login(user.email)
+        link = mailbox.get_link()
         with lock(user.id):
-            ConfirmEmailScript()(user)
+            ConfirmEmailScript()(user, link)
+    except EmailException:
+        log.warn('Retrying task %d time', self.request.retries)
+        self.retry(countdown=300)
     except LockException:
         log.warn('Retrying task %d time', self.request.retries)
         self.retry(countdown=100)
