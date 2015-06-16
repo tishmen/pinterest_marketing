@@ -27,7 +27,7 @@ class UserAdmin(admin.ModelAdmin):
     formfield_overrides = {models.TextField: {'widget': forms.TextInput}}
     search_fields = ('name', 'username')
     list_display = (
-        'name', 'username', 'board_count', 'repin_count', 'like_count',
+        'name', 'username', 'board_count', 'pin_count', 'like_count',
         'follower_count', 'following_count'
     )
     actions = (

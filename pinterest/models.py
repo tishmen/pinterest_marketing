@@ -43,7 +43,7 @@ class User(models.Model):
     location = models.TextField()
     cookies = models.TextField(default='[]')
     board_count = models.PositiveIntegerField(default=0)
-    repin_count = models.PositiveIntegerField(default=0)
+    pin_count = models.PositiveIntegerField(default=0)
     like_count = models.PositiveIntegerField(default=0)
     follower_count = models.PositiveIntegerField(default=0)
     following_count = models.PositiveIntegerField(default=0)
@@ -123,7 +123,6 @@ class Pin(models.Model):
     repin_count = models.PositiveIntegerField(default=0)
     like_count = models.PositiveIntegerField(default=0)
     comment_count = models.PositiveIntegerField(default=0)
-    created_at = models.DateTimeField()
     added_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
