@@ -1,6 +1,7 @@
 from django.db import models
 
 from pinterest.models import CATEGORIES, User
+from store.spinner import TextSpinner
 
 
 class RandomEmailManager(models.Manager):
@@ -121,6 +122,11 @@ class About(models.Model):
     objects = models.Manager()
     random = RandomManager()
 
+    def spin(self):
+        '''Return spun content from spintax format.'''
+        text_spinner = TextSpinner()
+        return text_spinner.spin(self.about)
+
     def __str__(self):
         return self.about
 
@@ -131,6 +137,11 @@ class Location(models.Model):
 
     location = models.TextField(unique=True)
     added_at = models.DateTimeField(auto_now_add=True)
+
+    def spin(self):
+        '''Return spun content from spintax format.'''
+        text_spinner = TextSpinner()
+        return text_spinner.spin(self.location)
 
     objects = models.Manager()
     random = RandomManager()
@@ -154,6 +165,16 @@ class Board(models.Model):
     )
     added_at = models.DateTimeField(auto_now_add=True)
 
+    def spin_name(self):
+        '''Return spun name from spintax format.'''
+        text_spinner = TextSpinner()
+        return text_spinner.spin(self.name)
+
+    def spin_description(self):
+        '''Return spun description from spintax format.'''
+        text_spinner = TextSpinner()
+        return text_spinner.spin(self.description)
+
     def __str__(self):
         return self.name
 
@@ -172,6 +193,11 @@ class Keyword(models.Model):
     )
     added_at = models.DateTimeField(auto_now_add=True)
 
+    def spin(self):
+        '''Return spun content from spintax format.'''
+        text_spinner = TextSpinner()
+        return text_spinner.spin(self.keyword)
+
     def __str__(self):
         return self.keyword
 
@@ -189,6 +215,11 @@ class Comment(models.Model):
         choices=((category, category) for category in CATEGORIES)
     )
     added_at = models.DateTimeField(auto_now_add=True)
+
+    def spin(self):
+        '''Return spun content from spintax format.'''
+        text_spinner = TextSpinner()
+        return text_spinner.spin(self.comment)
 
     def __str__(self):
         return self.comment
