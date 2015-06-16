@@ -10,7 +10,7 @@ CREATE_USER_SELECTORS = {
     'email': (By.CSS_SELECTOR, '#userEmail'),
     'password': (By.CSS_SELECTOR, '#userPassword'),
     'continue': (By.CSS_SELECTOR, '.continueButton'),
-    'full_name': (By.CSS_SELECTOR, '#userFullName'),
+    'name': (By.CSS_SELECTOR, '#userFullName'),
     'age': (By.CSS_SELECTOR, '#userAge'),
     'female': (By.CSS_SELECTOR, 'input[value=female]'),
     'sign_up': (By.CSS_SELECTOR, '.signup'),

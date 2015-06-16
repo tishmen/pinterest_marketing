@@ -31,7 +31,7 @@ class UserAdminForm(forms.ModelForm):
             'name': name,
             'age': age,
             'username': User.get_username(name, age),
-            'about': About.random.first(),
-            'location': Location.random.first(),
+            'about': About.random.first().spin(),
+            'location': Location.random.first().spin(),
             'photo': User.get_photo(),
         }

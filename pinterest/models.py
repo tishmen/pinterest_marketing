@@ -82,6 +82,14 @@ class User(models.Model):
         if available:
             return random.choice(available)
 
+    def url(self):
+        '''Return pinterest user url'''
+        return 'https://www.pinterest.com/{}/'.format(self.username)
+
+    def following_url(self):
+        '''Return pinterest user following url'''
+        return 'https://www.pinterest.com/{}/following/'.format(self.username)
+
     def __str__(self):
         return self.username
 
@@ -104,6 +112,12 @@ class Board(models.Model):
     follower_count = models.PositiveIntegerField(default=0)
     collaborator_count = models.PositiveIntegerField(default=0)
     added_at = models.DateTimeField(auto_now_add=True)
+
+    def url(self):
+        '''Return pinterest board url'''
+        return 'https://www.pinterest.com/{}/{}'.format(
+            self.user, self.name.replace(' ', '-').lower()[:50]
+        )
 
     def __str__(self):
         return self.name

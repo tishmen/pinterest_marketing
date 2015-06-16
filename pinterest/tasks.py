@@ -76,8 +76,9 @@ def create_boards_task(self, user):
 def sync_task(self, user):
     '''Celery task for syncing pinterest user with local database.'''
     try:
+        boards = user.board_set.all()
         with lock(user.id):
-            SyncScript()(user)
+            SyncScript()(user, boards)
     except LockException:
         log.warn('Retrying task %d time', self.request.retries)
         self.retry(countdown=100)
@@ -174,9 +175,8 @@ def scrape_task(self, user):
     '''Celery task for scraping random pins.'''
     try:
         keyword = Keyword.random.first()
-        count = random.randint(config.MINIMUM_SCRAPE, config.MAXIMUM_SCRAPE)
         with lock(user.id):
-            ScrapeScript()(user, keyword, count)
+            ScrapeScript()(user, keyword)
     except LockException:
         log.warn('Retrying task %d time', self.request.retries)
         self.retry(countdown=100)

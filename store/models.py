@@ -179,29 +179,6 @@ class Board(models.Model):
         return self.name
 
 
-class Keyword(models.Model):
-
-    '''Main storage for keyword.'''
-
-    class Meta:
-        unique_together = ('keyword', 'category')
-
-    keyword = models.TextField()
-    category = models.CharField(
-        max_length=21,
-        choices=((category, category) for category in CATEGORIES)
-    )
-    added_at = models.DateTimeField(auto_now_add=True)
-
-    def spin(self):
-        '''Return spun content from spintax format.'''
-        text_spinner = TextSpinner()
-        return text_spinner.spin(self.keyword)
-
-    def __str__(self):
-        return self.keyword
-
-
 class Comment(models.Model):
 
     '''Main storage for comment.'''
@@ -223,3 +200,27 @@ class Comment(models.Model):
 
     def __str__(self):
         return self.comment
+
+
+class Keyword(models.Model):
+
+    '''Main storage for keyword.'''
+
+    class Meta:
+        unique_together = ('keyword', 'category')
+
+    keyword = models.TextField()
+    category = models.CharField(
+        max_length=21,
+        choices=((category, category) for category in CATEGORIES)
+    )
+    added_at = models.DateTimeField(auto_now_add=True)
+
+    def search_url(self):
+        '''Return pinterest search url for keyword.'''
+        return 'https://www.pinterest.com/search/?q={}'.format(
+            self.keyword.replace(' ', '+')
+        )
+
+    def __str__(self):
+        return self.keyword
