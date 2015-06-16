@@ -3,11 +3,11 @@ from django.contrib import admin, messages
 from django.db import models
 
 from pinterest.forms import UserAdminForm
-from pinterest.models import Board, User, Pin
+from pinterest.models import Board, Pin, User
 from pinterest.tasks import (
     comment_task, confirm_email_task, create_boards_task, create_user_task,
-    follow_task, like_task, login_task, repin_task, unfollow_task,
-    sync_task, scrape_task
+    follow_task, like_task, login_task, repin_task, scrape_task, sync_task,
+    unfollow_task
 )
 
 

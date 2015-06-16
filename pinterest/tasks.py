@@ -8,8 +8,8 @@ from constance import config
 from pinterest.models import User
 from pinterest.scripts import (
     CommentScript, ConfirmEmailScript, CreateBoardsScript, CreateUserScript,
-    FollowScript, LikeScript, LoginScript, RepinScript, UnfollowScript,
-    SyncScript, ScrapeScript
+    FollowScript, LikeScript, LoginScript, RepinScript, ScrapeScript,
+    SyncScript, UnfollowScript
 )
 from pinterest_marketing.lock import LockException, lock
 from store.models import Board, Comment, Keyword
