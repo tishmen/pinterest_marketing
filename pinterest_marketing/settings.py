@@ -107,8 +107,6 @@ CELERYBEAT_SCHEDULER = 'djcelery.schedulers.DatabaseScheduler'
 djcelery.setup_loader()
 
 CONSTANCE_CONFIG = {
-    'MINIMUM_AGE': (20, 'Minimum user age'),
-    'MAXIMUM_AGE': (50, 'Maximum user age'),
     'MINIMUM_REPIN_COUNT': (1, 'Minimum repin count for pin'),
     'MINIMUM_LIKE_COUNT': (1, 'Minimum like count for pin'),
     'MINIMUM_COMMENT_COUNT': (1, 'Minimum comment count for pin'),
@@ -126,4 +124,6 @@ CONSTANCE_CONFIG = {
     'MAXIMUM_FOLLOW': (1, 'Maximum follows per task run'),
     'MINIMUM_UNFOLLOW': (1, 'Minimum unfollows per task run'),
     'MAXIMUM_UNFOLLOW': (1, 'Maximum unfollows per task run'),
+    'MINIMUM_SCRAPE': (1, 'Minimum scrapes per task run'),
+    'MAXIMUM_SCRAPE': (1, 'Maximum scrapes per task run'),
 }

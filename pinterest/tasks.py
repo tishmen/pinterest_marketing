@@ -8,12 +8,27 @@ from constance import config
 from pinterest.models import User
 from pinterest.scripts import (
     CommentScript, ConfirmEmailScript, CreateBoardsScript, CreateUserScript,
-    FollowScript, LikeScript, LoginScript, RepinScript, UnfollowScript
+    FollowScript, LikeScript, LoginScript, RepinScript, UnfollowScript,
+    SyncScript, ScrapeScript
 )
 from pinterest_marketing.lock import LockException, lock
 from store.models import Board, Comment, Keyword
 
 log = logging.getLogger('pinterest_marketing')
+
+
+@shared_task(bind=True, max_retries=1)
+def login_task(self, user):
+    '''Celery task for loging pinterest user.'''
+    try:
+        with lock(user.id):
+            LoginScript()(user)
+    except LockException:
+        log.warn('Retrying task %d time', self.request.retries)
+        self.retry(countdown=100)
+    except Exception:
+        log.error('Traceback: %s', traceback.format_exc())
+        raise
 
 
 @shared_task(bind=True)
@@ -42,20 +57,6 @@ def confirm_email_task(self, user):
 
 
 @shared_task(bind=True, max_retries=1)
-def login_task(self, user):
-    '''Celery task for loging pinterest user.'''
-    try:
-        with lock(user.id):
-            LoginScript()(user)
-    except LockException:
-        log.warn('Retrying task %d time', self.request.retries)
-        self.retry(countdown=100)
-    except Exception:
-        log.error('Traceback: %s', traceback.format_exc())
-        raise
-
-
-@shared_task(bind=True, max_retries=1)
 def create_boards_task(self, user):
     '''Celery task for creating pinterest boards.'''
     try:
@@ -72,8 +73,22 @@ def create_boards_task(self, user):
 
 
 @shared_task(bind=True, max_retries=1)
+def sync_task(self, user):
+    '''Celery task for syncing pinterest user with local database.'''
+    try:
+        with lock(user.id):
+            SyncScript()(user)
+    except LockException:
+        log.warn('Retrying task %d time', self.request.retries)
+        self.retry(countdown=100)
+    except Exception:
+        log.error('Traceback: %s', traceback.format_exc())
+        raise
+
+
+@shared_task(bind=True, max_retries=1)
 def repin_task(self, user):
-    '''Celery task for repinning random pin.'''
+    '''Celery task for repinning random pins.'''
     try:
         keyword = Keyword.random.first()
         boards = user.board_set.filter(category=keyword.category).all()
@@ -90,7 +105,7 @@ def repin_task(self, user):
 
 @shared_task(bind=True, max_retries=1)
 def like_task(self, user):
-    '''Celery task for liking random pin.'''
+    '''Celery task for liking random pins.'''
     try:
         keyword = Keyword.random.first()
         count = random.randint(config.MINIMUM_LIKE, config.MAXIMUM_LIKE)
@@ -106,7 +121,7 @@ def like_task(self, user):
 
 @shared_task(bind=True, max_retries=1)
 def comment_task(self, user):
-    '''Celery task for commenting on random pin.'''
+    '''Celery task for commenting on random pins.'''
     try:
         keyword = Keyword.random.first()
         comments = Comment.random.all()
@@ -154,6 +169,29 @@ def unfollow_task(self, user):
         raise
 
 
+@shared_task(bind=True, max_retries=1)
+def scrape_task(self, user):
+    '''Celery task for scraping random pins.'''
+    try:
+        keyword = Keyword.random.first()
+        count = random.randint(config.MINIMUM_SCRAPE, config.MAXIMUM_SCRAPE)
+        with lock(user.id):
+            ScrapeScript()(user, keyword, count)
+    except LockException:
+        log.warn('Retrying task %d time', self.request.retries)
+        self.retry(countdown=100)
+    except Exception:
+        log.error('Traceback: %s', traceback.format_exc())
+        raise
+
+
+@shared_task(bind=True)
+def sync_periodic_task(self, user):
+    '''Periodic celery task for syncing pinterest users.'''
+    for user in User.available.all():
+        sync_task.delay(user)
+
+
 @shared_task(bind=True)
 def repin_periodic_task(self, user):
     '''Periodic celery task for repining random users.'''
@@ -187,3 +225,10 @@ def unfollow_periodic_task(self, user):
     '''Periodic celery task for unfollowing random users.'''
     for user in User.available.all():
         unfollow_task.delay(user)
+
+
+@shared_task(bind=True)
+def scrape_periodic_task(self, user):
+    '''Periodic celery task for scraping random pins.'''
+    for user in User.available.all():
+        scrape_task.delay(user)

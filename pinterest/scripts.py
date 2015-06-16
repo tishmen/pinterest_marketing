@@ -5,6 +5,15 @@ from pinterest.browser import Browser
 log = logging.getLogger('pinterest_marketing')
 
 
+class LoginScript(Browser):
+
+    '''Login user on pinterest.'''
+
+    def __call__(self, user):
+        '''Run selenium script for LoginScript.'''
+        log.debug('Called LoginScript with args %s', user)
+
+
 class CreateUserScript(Browser):
 
     '''Create user on pinterest.'''
@@ -23,15 +32,6 @@ class ConfirmEmailScript(Browser):
         log.debug('Called ConfirmEmailScript with args %s', user)
 
 
-class LoginScript(Browser):
-
-    '''Login user on pinterest.'''
-
-    def __call__(self, user):
-        '''Run selenium script for LoginScript.'''
-        log.debug('Called LoginScript with args %s', user)
-
-
 class CreateBoardsScript(Browser):
 
     '''Create boards on pinterest.'''
@@ -39,6 +39,15 @@ class CreateBoardsScript(Browser):
     def __call__(self, user, boards):
         '''Run selenium script for CreateBoardsScript.'''
         log.debug('Called CreateBoardsScript with args %s, %s', user, boards)
+
+
+class SyncScript(Browser):
+
+    '''Sync user on pinterest to local database.'''
+
+    def __call__(self, user):
+        '''Run selenium script for SyncScript.'''
+        log.debug('Called SyncScript with args %s', user)
 
 
 class RepinScript(Browser):
@@ -94,3 +103,14 @@ class UnfollowScript(Browser):
     def __call__(self, user, count):
         '''Run selenium script for UnfollowScript.'''
         log.debug('Called UnfollowScript with args %s, %d', user, count)
+
+
+class ScrapeScript(Browser):
+
+    '''Scrape random pins on pinterest.'''
+
+    def __call__(self, user, keyword, count):
+        '''Run selenium script for ScrapeScript.'''
+        log.debug(
+            'Called ScrapeScript with args %s, %s, %d', user, keyword, count
+        )

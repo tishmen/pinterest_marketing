@@ -2,7 +2,6 @@ import os
 import random
 import string
 
-from constance import config
 from django.db import models
 
 from pinterest_marketing.settings import PHOTO_DIR
@@ -28,28 +27,6 @@ class AvailableUserManager(models.Manager):
         return queryset.exclude(cookies='[]')
 
 
-class Id(models.Model):
-
-    '''Main storage for id.'''
-
-    id = models.BigIntegerField(primary_key=True, unique=True)
-    added_at = models.DateTimeField(auto_now_add=True)
-
-    def __str__(self):
-        return str(self.id)
-
-
-class Username(models.Model):
-
-    '''Main storage for username.'''
-
-    username = models.CharField(max_length=15, unique=True)
-    added_at = models.DateTimeField(auto_now_add=True)
-
-    def __str__(self):
-        return self.username
-
-
 class User(models.Model):
 
     '''Main storage for user.'''
@@ -65,15 +42,11 @@ class User(models.Model):
     about = models.CharField(max_length=160)
     location = models.TextField()
     cookies = models.TextField(default='[]')
-    repins = models.ManyToManyField('Id', related_name='+', blank=True)
-    likes = models.ManyToManyField('Id', related_name='+', blank=True)
-    comments = models.ManyToManyField('Id', related_name='+', blank=True)
-    followers = models.ManyToManyField(
-        'Username', related_name='+', blank=True
-    )
-    following = models.ManyToManyField(
-        'Username', related_name='+', blank=True
-    )
+    board_count = models.PositiveIntegerField(default=0)
+    repin_count = models.PositiveIntegerField(default=0)
+    like_count = models.PositiveIntegerField(default=0)
+    follower_count = models.PositiveIntegerField(default=0)
+    following_count = models.PositiveIntegerField(default=0)
     added_at = models.DateTimeField(auto_now_add=True)
 
     objects = models.Manager()
@@ -87,7 +60,7 @@ class User(models.Model):
     @staticmethod
     def get_age():
         '''Return random age.'''
-        return random.randint(config.MINIMUM_AGE, config.MAXIMUM_AGE)
+        return random.randint(20, 60)
 
     @staticmethod
     def get_password():
@@ -127,8 +100,31 @@ class Board(models.Model):
         choices=((category, category) for category in CATEGORIES)
     )
     description = models.CharField(max_length=500)
-    pins = models.ManyToManyField('Id', related_name='+', blank=True)
+    pin_count = models.PositiveIntegerField(default=0)
+    follower_count = models.PositiveIntegerField(default=0)
+    collaborator_count = models.PositiveIntegerField(default=0)
     added_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
         return self.name
+
+
+class Pin(models.Model):
+
+    '''Main storage for pinterest pin.'''
+
+    keyword = models.ForeignKey('store.Keyword')
+    id = models.BigIntegerField(primary_key=True)
+    title = models.TextField()
+    description = models.TextField()
+    link = models.URLField(unique=True)
+    image = models.URLField(unique=True)
+    image_signature = models.CharField(max_length=32, unique=True)
+    repin_count = models.PositiveIntegerField(default=0)
+    like_count = models.PositiveIntegerField(default=0)
+    comment_count = models.PositiveIntegerField(default=0)
+    created_at = models.DateTimeField()
+    added_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return self.title

@@ -3,10 +3,11 @@ from django.contrib import admin, messages
 from django.db import models
 
 from pinterest.forms import UserAdminForm
-from pinterest.models import Board, User
+from pinterest.models import Board, User, Pin
 from pinterest.tasks import (
     comment_task, confirm_email_task, create_boards_task, create_user_task,
-    follow_task, like_task, login_task, repin_task, unfollow_task
+    follow_task, like_task, login_task, repin_task, unfollow_task,
+    sync_task, scrape_task
 )
 
 
@@ -27,12 +28,12 @@ class UserAdmin(admin.ModelAdmin):
     search_fields = ('name', 'username')
     list_display = (
         'name', 'username', 'board_count', 'repin_count', 'like_count',
-        'comment_count', 'followers_count', 'following_count'
+        'follower_count', 'following_count'
     )
     actions = (
-        'create_user_action', 'confirm_email_action', 'login_action',
-        'create_boards_action', 'repin_action', 'like_action',
-        'comment_action', 'follow_action', 'unfollow_action'
+        'login_action', 'create_user_action', 'confirm_email_action',
+        'create_boards_action', 'sync_task', 'repin_action', 'like_action',
+        'comment_action', 'follow_action', 'unfollow_action', 'scrape_action'
     )
     form = UserAdminForm
     inlines = (BoardInline, )
@@ -44,6 +45,12 @@ class UserAdmin(admin.ModelAdmin):
         else:
             message = 'Delayed {} for {} users.'.format(task_name, count),
         self.message_user(request, message, level=messages.SUCCESS)
+
+    def login_action(self, request, queryset):
+        '''Admin action for loging pinterest users.'''
+        for user in queryset:
+            login_task.delay(user)
+        self.display_message(request, 'login_task', queryset.count())
 
     def create_user_action(self, request, queryset):
         '''Admin action for creating pinterest users.'''
@@ -66,11 +73,12 @@ class UserAdmin(admin.ModelAdmin):
             create_boards_task.delay(user)
         self.display_message(request, 'create_boards_task', queryset.count())
 
-    def login_action(self, request, queryset):
-        '''Admin action for loging pinterest users.'''
+    def sync_action(self, request, queryset):
+        '''Admin action for syncing pinterest users.'''
+        queryset = queryset.exclude(cookies='[]')
         for user in queryset:
-            login_task.delay(user)
-        self.display_message(request, 'login_task', queryset.count())
+            sync_task.delay(user)
+        self.display_message(request, 'sync_task', queryset.count())
 
     def like_action(self, request, queryset):
         '''Admin action for liking random pinterest pins.'''
@@ -84,7 +92,7 @@ class UserAdmin(admin.ModelAdmin):
         queryset = queryset.exclude(cookies='[]')
         for user in queryset:
             comment_task.delay(user)
-        self.display_message(request, 'like_task', queryset.count())
+        self.display_message(request, 'comment_task', queryset.count())
 
     def repin_action(self, request, queryset):
         '''Admin action for repinning random pinterest pins.'''
@@ -107,63 +115,30 @@ class UserAdmin(admin.ModelAdmin):
             unfollow_task.delay(user)
         self.display_message(request, 'unfollow_task', queryset.count())
 
-    def get_queryset(self, request):
-        '''Override model admin get_queryset. Return annotated queryset.'''
-        return User.objects.annotate(
-            board_count=models.Count('board'),
-            repin_count=models.Count('repins'),
-            like_count=models.Count('likes'),
-            comment_count=models.Count('comments'),
-            followers_count=models.Count('followers'),
-            following_count=models.Count('following')
-        )
+    def scrape_action(self, request, queryset):
+        '''Admin action for scraping random pinterest pins.'''
+        queryset = queryset.exclude(cookies='[]')
+        for user in queryset:
+            scrape_task.delay(user)
+        self.display_message(request, 'scrape_task', queryset.count())
 
-    def board_count(self, user):
-        '''Return user board count.'''
-        return user.board_count
-
-    def repin_count(self, user):
-        '''Return user repin count.'''
-        return user.repin_count
-
-    def like_count(self, user):
-        '''Return user like count.'''
-        return user.like_count
-
-    def comment_count(self, user):
-        '''Return user comment count.'''
-        return user.comment_count
-
-    def followers_count(self, user):
-        '''Return user followers count.'''
-        return user.followers_count
-
-    def following_count(self, user):
-        '''Return user following count.'''
-        return user.following_count
-
+    login_action.short_description = 'Login task for selected users'
     create_user_action.short_description = (
         'Create user task for selected users'
     )
     confirm_email_action.short_description = (
         'Confirm email task for selected users'
     )
-    login_action.short_description = 'Login task for selected users'
     create_boards_action.short_description = (
         'Create boards task for selected users'
     )
+    sync_action.short_description = 'Sync task for selected users'
     like_action.short_description = 'Like task for selected users'
     comment_action.short_description = 'Comment task for selected users'
     repin_action.short_description = 'Repin task for selected users'
     follow_action.short_description = 'Follow task for selected users'
     unfollow_action.short_description = 'Unfollow task for selected users'
-
-    board_count.admin_order_field = 'board_count'
-    repin_count.admin_order_field = 'repin_count'
-    like_count.admin_order_field = 'like_count'
-    comment_count.admin_order_field = 'comment_count'
-    followers_count.admin_order_field = 'followers_count'
-    following_count.admin_order_field = 'following_count'
+    scrape_action.short_description = 'Scrape task for selected users'
 
 
 @admin.register(Board)
@@ -173,14 +148,20 @@ class BoardAdmin(admin.ModelAdmin):
 
     search_fields = ('name', )
     list_filter = ('category', 'description')
-    list_display = ('name', 'description', 'category', 'user', 'pin_count')
+    list_display = (
+        'name', 'description', 'category', 'user', 'pin_count',
+        'follower_count', 'collaborator_count'
+    )
 
-    def get_queryset(self, request):
-        '''Override model admin get_queryset. Return annotated queryset.'''
-        return Board.objects.annotate(pin_count=models.Count('pins'))
 
-    def pin_count(self, board):
-        '''Return board pin count.'''
-        return board.pin_count
+@admin.register(Pin)
+class PinAdmin(admin.ModelAdmin):
 
-    pin_count.admin_order_field = 'pin_count'
+    '''Admin integration for pin.'''
+
+    formfield_overrides = {models.TextField: {'widget': forms.TextInput}}
+    search_fields = ('title', 'description', 'link')
+    list_display = (
+        'title', 'description', 'link', 'repin_count', 'like_count',
+        'comment_count'
+    )
