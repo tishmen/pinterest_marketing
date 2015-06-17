@@ -78,3 +78,8 @@ class Browser(object):
         options = Select(element)
         options.select_by_value(value)
         log.debug('Selected %s for %s', value, name)
+
+    def clear(self, name, element):
+        '''Clear element input.'''
+        element.clear()
+        log.debug('Cleared %s input', name)

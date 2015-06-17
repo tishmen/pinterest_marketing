@@ -49,6 +49,26 @@ class Parser(object):
                 )
         return pins
 
+    def get_keyword(self, result, keyword):
+        '''Return 'result keyword' if position is 0 else 'keyword result'.'''
+        if result['position'] == 0:
+            return '{} {}'.format(result['term'], keyword)
+        return '{} {}'.format(keyword, result['term'])
+
+    def get_keywords_data(self, json, keyword):
+        '''Return list of computed keywords.'''
+        data = json['resourceDataCache'][0]['data']['guides']
+        keywords = []
+        for result in data:
+            keywords.append(
+                {
+                    'keyword': self.get_keyword(result, keyword),
+                    'category': keyword.category,
+                    'scraped': True,
+                }
+            )
+        return keywords
+
     def get_pin_repins_url(self, json):
         '''Return pin repins url.'''
         data = json['resourceDataCache'][0]['data']

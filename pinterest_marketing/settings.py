@@ -108,8 +108,8 @@ djcelery.setup_loader()
 
 CONSTANCE_CONFIG = {
     'MINIMUM_REPIN_COUNT': (1, 'Minimum repin count for pin'),
-    'MINIMUM_LIKE_COUNT': (1, 'Minimum like count for pin'),
-    'MINIMUM_COMMENT_COUNT': (1, 'Minimum comment count for pin'),
+    'MINIMUM_LIKE_COUNT': (0, 'Minimum like count for pin'),
+    'MINIMUM_COMMENT_COUNT': (0, 'Minimum comment count for pin'),
     'MINIMUM_PIN_COUNT': (1, 'Minimum pin count for board'),
 
     'MINIMUM_BOARD': (1, 'Minimum boards per task run'),

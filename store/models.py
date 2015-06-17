@@ -165,6 +165,9 @@ class Board(models.Model):
     )
     added_at = models.DateTimeField(auto_now_add=True)
 
+    objects = models.Manager()
+    random = RandomManager()
+
     def spin_name(self):
         '''Return spun name from spintax format.'''
         text_spinner = TextSpinner()
@@ -214,7 +217,11 @@ class Keyword(models.Model):
         max_length=21,
         choices=((category, category) for category in CATEGORIES)
     )
+    scraped = models.BooleanField(default=False)
     added_at = models.DateTimeField(auto_now_add=True)
+
+    objects = models.Manager()
+    random = RandomManager()
 
     def search_url(self):
         '''Return pinterest search url for keyword.'''

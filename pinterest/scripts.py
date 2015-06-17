@@ -1,9 +1,11 @@
+import random
 import logging
 
 from pinterest.models import Pin, Board
 from pinterest.browser import Browser
 from pinterest.selectors import *
 from pinterest.parser import Parser
+from store.models import Keyword
 
 log = logging.getLogger('pinterest_marketing')
 
@@ -74,21 +76,46 @@ class CreateUserScript(Browser):
         '''Click event on sign up button.'''
         self.click('sign_up', self.get_element('sign_up'))
 
+    def click_next(self):
+        '''Click event on next button.'''
+        self.click('next', self.get_element('next'))
+
+    def click_follows(self):
+        '''Click event on follows button.'''
+        follows = self.get_elements('follows')
+        random.shuffle(follows)
+        for follow in follows[:random.randint(5, 10)]:
+            self.click('follow', follow)
+
+    def click_done(self):
+        '''Click event on done button.'''
+        self.click('done', self.get_element('done'))
+
+    def click_skip(self):
+        '''Click event on skip button.'''
+        self.click('skip', self.get_element('skip'))
+
+    def click_confirm(self):
+        '''Click event on confirm button.'''
+        self.click('confirm', self.get_element('confirm'))
+
     def click_country(self):
         '''Click event on US country option.'''
         self.click('country', self.get_element('country'))
 
-    def click_change_picture(self):
-        '''Click event on change picture button.'''
-        self.click('change_picture', self.get_element('change_picture'))
+    def click_change_photo(self):
+        '''Click event on change photo button.'''
+        self.click('change_photo', self.get_element('change_photo'))
 
-    def set_change_photo(self, text):
-        '''Set change photo input to text.'''
-        self.send_keys('change_photo', self.get_element('change_photo'), text)
+    def set_choose_file(self, text):
+        '''Set choose file input to text.'''
+        self.send_keys('choose_file', self.get_element('choose_file'), text)
 
     def set_username(self, text):
         '''Set username input to text.'''
-        self.send_keys('username', self.get_element('username'), text)
+        username = self.get_element('username')
+        self.clear('username', username)
+        self.send_keys('username', username, text)
 
     def set_about(self, text):
         '''Set about input to text.'''
@@ -114,17 +141,21 @@ class CreateUserScript(Browser):
             self.set_age(str(user.age))
             self.click_female()
             self.click_sign_up()
+            self.click_next()
+            self.click_follows()
+            self.click_done()
+            self.click_skip()
+            self.click_confirm()
+            self.click_skip()
+            self.click_confirm()
             self.get_url('http://www.pinterest.com/settings/')
             self.click_country()
-            self.click_change_picture()
-            self.set_change_photo(user.photo)
+            self.click_change_photo()
+            self.set_choose_file(user.photo)
             self.set_username(user.username)
             self.set_about(user.about)
             self.set_location(user.location)
             self.click_save_settings()
-        except Exception:
-            user.email.delete()
-            raise
         finally:
             self.destroy(user)
 
@@ -195,7 +226,7 @@ class SyncScript(Browser):
     def __call__(self, user, boards):
         '''Run selenium script for SyncUserScript.'''
         try:
-            self.set_up(user, boards)
+            self.set_up(user)
             self.get_url(user.url())
             user.__dict__.update(self.parser.get_user_data(self.get_json()))
             user.save()
@@ -365,5 +396,25 @@ class ScrapeScript(Browser):
             self.get_url(keyword.search_url())
             for pin_data in self.parser.get_pins_data(self.get_json()):
                 Pin.objects.update_or_create(keyword=keyword, **pin_data)
+        finally:
+            self.destroy(user)
+
+
+class ScrapeKeywordScript(Browser):
+
+    '''Get pinterest keyword suggestions.'''
+
+    def __init__(self):
+        self.parser = Parser()
+
+    def __call__(self, user, keywords):
+        '''Run selenium script for ScrapeKeywordScript.'''
+        try:
+            self.set_up(user)
+            for keyword in keywords:
+                self.get_url(keyword.search_url())
+                for keyword_data in self.parser.get_keywords_data(
+                        self.get_json(), keyword):
+                    Keyword.objects.update_or_create(**keyword_data)
         finally:
             self.destroy(user)

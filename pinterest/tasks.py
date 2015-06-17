@@ -5,12 +5,12 @@ import traceback
 from celery import shared_task
 from constance import config
 
+from pinterest.mailbox import EmailException, MailBox
 from pinterest.models import User
-from pinterest.mailbox import MailBox, EmailException
 from pinterest.scripts import (
     CommentScript, ConfirmEmailScript, CreateBoardsScript, CreateUserScript,
-    FollowScript, LikeScript, LoginScript, RepinScript, ScrapeScript,
-    SyncScript, UnfollowScript
+    FollowScript, LikeScript, LoginScript, RepinScript, ScrapeKeywordsScript,
+    ScrapeScript, SyncScript, UnfollowScript
 )
 from pinterest_marketing.lock import LockException, lock
 from store.models import Board, Comment, Keyword
@@ -184,6 +184,21 @@ def scrape_task(self, user):
         keyword = Keyword.random.first()
         with lock(user.id):
             ScrapeScript()(user, keyword)
+    except LockException:
+        log.warn('Retrying task %d time', self.request.retries)
+        self.retry(countdown=100)
+    except Exception:
+        log.error('Traceback: %s', traceback.format_exc())
+        raise
+
+
+@shared_task(bind=True, max_retries=1)
+def scrape_keywords_task(self, keywords):
+    '''Celery task for scraping pinterest keywords suggestions.'''
+    try:
+        user = User.random.first()
+        with lock(user.id):
+            ScrapeKeywordsScript()(user, keywords)
     except LockException:
         log.warn('Retrying task %d time', self.request.retries)
         self.retry(countdown=100)

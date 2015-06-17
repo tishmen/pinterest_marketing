@@ -27,6 +27,16 @@ class AvailableUserManager(models.Manager):
         return queryset.exclude(cookies='[]')
 
 
+class RandomUserManager(models.Manager):
+
+    '''Custom manager for user. Return available users in random order.'''
+
+    def get_queryset(self):
+        '''Override model manager get_queryset method.'''
+        queryset = super(RandomUserManager, self).get_queryset()
+        return queryset.exclude(cookies='[]').order_by('?')
+
+
 class User(models.Model):
 
     '''Main storage for user.'''
@@ -51,6 +61,7 @@ class User(models.Model):
 
     objects = models.Manager()
     available = AvailableUserManager()
+    random = RandomUserManager()
 
     @staticmethod
     def get_name(first, last):

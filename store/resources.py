@@ -78,15 +78,6 @@ class BoardResource(resources.ModelResource):
         exclude = ('added_at', )
 
 
-class KeywordResource(resources.ModelResource):
-
-    '''Resource class for keyword.'''
-
-    class Meta:
-        model = Keyword
-        exclude = ('scraped', 'added_at', )
-
-
 class CommentResource(resources.ModelResource):
 
     '''Resource class for comment.'''
@@ -94,3 +85,12 @@ class CommentResource(resources.ModelResource):
     class Meta:
         model = Comment
         exclude = ('added_at', )
+
+
+class KeywordResource(resources.ModelResource):
+
+    '''Resource class for keyword.'''
+
+    class Meta:
+        model = Keyword
+        exclude = ('scraped', 'added_at', )
