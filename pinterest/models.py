@@ -92,6 +92,10 @@ class User(models.Model):
         if available:
             return random.choice(available)
 
+    def __str__(self):
+        '''Override model string method.'''
+        return self.username
+
     def url(self):
         '''Return pinterest user url'''
         return 'https://www.pinterest.com/{}/'.format(self.username)
@@ -99,9 +103,6 @@ class User(models.Model):
     def following_url(self):
         '''Return pinterest user following url'''
         return 'https://www.pinterest.com/{}/following/'.format(self.username)
-
-    def __str__(self):
-        return self.username
 
 
 class Board(models.Model):
@@ -125,11 +126,12 @@ class Board(models.Model):
     objects = models.Manager()
     random = RandomManager()
 
+    def __str__(self):
+        '''Override model string method.'''
+        return self.name
+
     def url(self):
         '''Return pinterest board url'''
         return 'https://www.pinterest.com/{}/{}'.format(
             self.user, self.name.replace(' ', '-').lower()[:50]
         )
-
-    def __str__(self):
-        return self.name

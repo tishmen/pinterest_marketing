@@ -29,7 +29,8 @@ CREATE_USER_SELECTORS = {
 }
 
 CREATE_BOARDS_SELECTORS = {
-    'create_board': (By.CSS_SELECTOR, '.BoardCreateRep'),
+    'create_board1': (By.CSS_SELECTOR, '.BoardCreateRep'),
+    'create_board2': (By.CSS_SELECTOR, '.createBoardButton'),
     'name': (By.CSS_SELECTOR, '#boardEditName'),
     'description': (By.CSS_SELECTOR, '#boardEditDescription'),
     'category': (By.CSS_SELECTOR, 'select[name=category]'),

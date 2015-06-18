@@ -31,7 +31,7 @@ class Browser(object):
         '''Set up and start browser instance.'''
         profile = self.get_profile(user.user_agent, user.proxy)
         self.browser = webdriver.Firefox(firefox_profile=profile)
-        self.browser.set_page_load_timeout(60)
+        self.browser.set_page_load_timeout(120)
         self.browser.implicitly_wait(30)
         for cookie in json.loads(user.cookies):
             self.browser.add_cookie(cookie)

@@ -183,8 +183,7 @@ class Board(models.Model):
 
     def spin_description(self):
         '''Return spun description from spintax format.'''
-        text_spinner = TextSpinner()
-        return text_spinner.spin(self.description)
+        return TextSpinner()(self.description)
 
 
 class Comment(models.Model):

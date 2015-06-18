@@ -44,6 +44,7 @@ class LoginScript(Browser):
         except Exception:
             self.save_screenshot(user)
             self.save_source(user)
+            raise
         finally:
             self.destroy(user)
 
@@ -91,7 +92,7 @@ class CreateUserScript(Browser):
         '''Click event on follows button.'''
         follows = self.get_elements('follows')
         random.shuffle(follows)
-        for follow in follows[:5]:
+        for follow in follows[:random.randint(5, 10)]:
             self.click('follow', follow)
 
     def click_done(self):
@@ -169,6 +170,7 @@ class CreateUserScript(Browser):
         except Exception:
             self.save_screenshot(user)
             self.save_source(user)
+            raise
         finally:
             self.destroy(user)
 
@@ -195,6 +197,7 @@ class ConfirmEmailScript(Browser):
         except Exception:
             self.save_screenshot(user)
             self.save_source(user)
+            raise
         finally:
             self.destroy(user)
 
@@ -206,9 +209,13 @@ class CreateBoardsScript(Browser):
     def __init__(self):
         self.selectors = CREATE_BOARDS_SELECTORS
 
-    def click_create_board(self):
-        '''Click event on create board link.'''
-        self.click('create_board', self.get_element('create_board'))
+    def click_create_board1(self):
+        '''Click event on create board1 link.'''
+        self.click('create_board1', self.get_element('create_board1'))
+
+    def click_create_board2(self):
+        '''Click event on create board2 link.'''
+        self.click('create_board2', self.get_element('create_board2'))
 
     def set_name(self, text):
         '''Set name input to text.'''
@@ -242,7 +249,10 @@ class CreateBoardsScript(Browser):
             self.set_up(user)
             for board in boards:
                 self.get_url(user.url())
-                self.click_create_board()
+                try:
+                    self.click_create_board1()
+                except WebDriverException:
+                    self.click_create_board2()
                 self.set_name(board.spin_name())
                 self.set_description(board.spin_description())
                 self.select_category(board.category)
@@ -251,6 +261,7 @@ class CreateBoardsScript(Browser):
         except Exception:
             self.save_screenshot(user)
             self.save_source(user)
+            raise
         finally:
             self.destroy(user)
 
@@ -288,6 +299,7 @@ class SyncScript(Browser):
         except Exception:
             self.save_screenshot(user)
             self.save_source(user)
+            raise
         finally:
             self.destroy(user)
 
@@ -323,6 +335,7 @@ class RepinScript(Browser):
         except Exception:
             self.save_screenshot(user)
             self.save_source(user)
+            raise
         finally:
             self.destroy(user)
 
@@ -352,6 +365,7 @@ class LikeScript(Browser):
         except Exception:
             self.save_screenshot(user)
             self.save_source(user)
+            raise
         finally:
             self.destroy(user)
 
@@ -384,6 +398,7 @@ class CommentScript(Browser):
         except Exception:
             self.save_screenshot(user)
             self.save_source(user)
+            raise
         finally:
             self.destroy(user)
 
@@ -414,6 +429,7 @@ class FollowScript(Browser):
         except Exception:
             self.save_screenshot(user)
             self.save_source(user)
+            raise
         finally:
             self.destroy(user)
 
@@ -445,5 +461,6 @@ class UnfollowScript(Browser):
         except Exception:
             self.save_screenshot(user)
             self.save_source(user)
+            raise
         finally:
             self.destroy(user)
