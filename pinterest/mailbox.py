@@ -19,27 +19,28 @@ class MailBox(object):
 
     '''IMAP connection to a Yahoo.'''
 
-    def login(self, email, host='imap.mail.yahoo.com', port=993):
+    def login(self, email):
         '''Login to imap with email address and password.'''
-        self.imap = imaplib.IMAP4_SSL(host, port)
+        self.imap = imaplib.IMAP4_SSL('imap.mail.yahoo.com', 993)
         self.imap.login(email.address, email.password)
         self.imap.select('"Inbox"')
-        log.debug('Loged in to %s as %s', host, email.address)
+        log.debug('Loged in to imap.mail.yahoo.com as %s', email.address)
 
-    def get_html(self, sender='confirm@account.pinterest.com'):
-        '''Return pinterest email message html.'''
-        _, message_ids = self.imap.search(None, '(FROM {})'.format(sender))
-        message_id = message_ids[0].decode('utf-8').split()[-1]
-        if not message_id:
-            raise EmailException
+    def get_html(self):
+        '''Return pinterest email raw html content.'''
+        _, ids = self.imap.search(None, '(FROM confirm@account.pinterest.com)')
+        try:
+            message_id = ids[0].decode('utf-8').split()[-1]
+        except IndexError:
+            raise EmailException('Comfirmation email not found')
         _, message = self.imap.fetch(message_id, '(RFC822)')
         for part in email.message_from_bytes(message).walk():
             if part.get_content_type() == 'text/html':
-                return quopri.decodestring(part.get_payload())
+                return part.get_payload()
 
     def get_link(self):
         '''Parse html for pinterest confirmation link.'''
-        soup = BeautifulSoup(self.get_html())
+        soup = BeautifulSoup(quopri.decodestring(self.get_html()))
         link = soup.find_all('a')[4].get('href')
         log.debug('Got pinterest confirmation link')
         return link
