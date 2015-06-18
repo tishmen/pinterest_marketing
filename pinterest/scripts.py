@@ -253,8 +253,8 @@ class CreateBoardsScript(Browser):
                     self.click_create_board1()
                 except WebDriverException:
                     self.click_create_board2()
-                self.set_name(board.spin_name())
-                self.set_description(board.spin_description())
+                self.set_name(board.name)
+                self.set_description(board.description)
                 self.select_category(board.category)
                 self.click_save_board()
                 self.save_board(user, board)
@@ -393,7 +393,7 @@ class CommentScript(Browser):
             self.get_url(keyword.url())
             for pin_url in self.parser.get_pin_urls(self.get_json())[:count]:
                 self.get_url(pin_url)
-                self.set_comment(random.choice(comments).spin())
+                self.set_comment(random.choice(comments))
                 self.click_comment()
         except Exception:
             self.save_screenshot(user)

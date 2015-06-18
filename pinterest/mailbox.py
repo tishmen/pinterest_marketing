@@ -32,7 +32,7 @@ class MailBox(object):
         try:
             message_id = ids[0].decode('utf-8').split()[-1]
         except IndexError:
-            raise EmailException('Comfirmation email not found')
+            raise EmailException('Confirmation email not found')
         _, message = self.imap.fetch(message_id, '(RFC822)')
         for part in email.message_from_bytes(message).walk():
             if part.get_content_type() == 'text/html':

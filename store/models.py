@@ -1,7 +1,6 @@
 from django.db import models
 
 from pinterest.models import CATEGORIES, User
-from store.spinner import TextSpinner
 
 
 class RandomEmailManager(models.Manager):
@@ -131,10 +130,6 @@ class About(models.Model):
         '''Override model string method.'''
         return self.about
 
-    def spin(self):
-        '''Return spun content from spintax format.'''
-        return TextSpinner()(self.about)
-
 
 class Location(models.Model):
 
@@ -143,16 +138,12 @@ class Location(models.Model):
     location = models.TextField(unique=True)
     added_at = models.DateTimeField(auto_now_add=True)
 
+    objects = models.Manager()
+    random = RandomManager()
+
     def __str__(self):
         '''Override model string method.'''
         return self.location
-
-    def spin(self):
-        '''Return spun content from spintax format.'''
-        return TextSpinner()(self.location)
-
-    objects = models.Manager()
-    random = RandomManager()
 
 
 class Board(models.Model):
@@ -177,14 +168,6 @@ class Board(models.Model):
         '''Override model string method.'''
         return self.name
 
-    def spin_name(self):
-        '''Return spun name from spintax format.'''
-        return TextSpinner()(self.name)
-
-    def spin_description(self):
-        '''Return spun description from spintax format.'''
-        return TextSpinner()(self.description)
-
 
 class Comment(models.Model):
 
@@ -206,10 +189,6 @@ class Comment(models.Model):
     def __str__(self):
         '''Override model string method.'''
         return self.comment
-
-    def spin(self):
-        '''Return spun content from spintax format.'''
-        return TextSpinner()(self.comment)
 
 
 class Keyword(models.Model):

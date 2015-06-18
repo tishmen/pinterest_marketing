@@ -65,7 +65,8 @@ class User(models.Model):
     @staticmethod
     def get_name(first, last):
         '''Return full name.'''
-        return '{} {}'.format(first, last)
+        if first and last:
+            return '{} {}'.format(first, last)
 
     @staticmethod
     def get_age():
