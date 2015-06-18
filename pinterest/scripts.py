@@ -1,11 +1,12 @@
 import random
 import logging
 
-from pinterest.models import Pin, Board
+from selenium.common.exceptions import WebDriverException
+
+from pinterest.models import Board
 from pinterest.browser import Browser
 from pinterest.selectors import *
 from pinterest.parser import Parser
-from store.models import Keyword
 
 log = logging.getLogger('pinterest_marketing')
 
@@ -34,9 +35,12 @@ class LoginScript(Browser):
         try:
             self.set_up(user)
             self.get_url('https://www.pinterest.com/login/')
-            self.set_email(user.email.address)
-            self.set_password(user.password)
-            self.click_login()
+            try:
+                self.set_email(user.email.address)
+                self.set_password(user.password)
+                self.click_login()
+            except WebDriverException:
+                pass
         finally:
             self.destroy(user)
 
@@ -84,7 +88,7 @@ class CreateUserScript(Browser):
         '''Click event on follows button.'''
         follows = self.get_elements('follows')
         random.shuffle(follows)
-        for follow in follows[:random.randint(5, 10)]:
+        for follow in follows[:5]:
             self.click('follow', follow)
 
     def click_done(self):
@@ -146,8 +150,11 @@ class CreateUserScript(Browser):
             self.click_done()
             self.click_skip()
             self.click_confirm()
-            self.click_skip()
-            self.click_confirm()
+            try:
+                self.click_skip()
+                self.click_confirm()
+            except WebDriverException:
+                pass
             self.get_url('http://www.pinterest.com/settings/')
             self.click_country()
             self.click_change_photo()
@@ -158,6 +165,16 @@ class CreateUserScript(Browser):
             self.click_save_settings()
         finally:
             self.destroy(user)
+
+
+class InteractScript(Browser):
+
+    '''Interact with user on pinterest.'''
+
+    def __call__(self, user):
+        '''Run selenium script for InteractScript.'''
+        self.set_up(user)
+        self.get_url('https://www.pinterest.com/')
 
 
 class ConfirmEmailScript(Browser):
@@ -200,6 +217,15 @@ class CreateBoardsScript(Browser):
         '''Click event on save board link.'''
         self.click('save_board', self.get_element('save_board'))
 
+    def save_board(self, user, board):
+        '''Save created board on pinterest in database.'''
+        Board.objects.create(
+            user=user,
+            name=board.name,
+            description=board.description,
+            category=board.category,
+        )
+
     def __call__(self, user, boards):
         '''Run selenium script for CreateBoardsScript.'''
         try:
@@ -211,7 +237,7 @@ class CreateBoardsScript(Browser):
                 self.set_description(board.spin_description())
                 self.select_category(board.category)
                 self.click_save_board()
-                Board.objects.create(user=user, **board)
+                self.save_board(user, board)
         finally:
             self.destroy(user)
 
@@ -223,19 +249,27 @@ class SyncScript(Browser):
     def __init__(self):
         self.parser = Parser()
 
+    def update_user(self, user, data):
+        '''Update user rows from data.'''
+        user.__dict__.update(data)
+        user.save()
+
+    def update_board(self, board, data):
+        '''Update board rows from data.'''
+        board.__dict__.update(data)
+        board.save()
+
     def __call__(self, user, boards):
         '''Run selenium script for SyncUserScript.'''
         try:
             self.set_up(user)
             self.get_url(user.url())
-            user.__dict__.update(self.parser.get_user_data(self.get_json()))
-            user.save()
+            data = self.parser.get_user_data(self.get_json())
+            self.update_user(user, data)
             for board in boards:
                 self.get_url(board.url())
-                board.__dict__.update(
-                    self.parser.get_board_data(self.get_json())
-                )
-                board.save()
+                data = self.parser.get_board_data(self.get_json())
+                self.update_board(board, data)
         finally:
             self.destroy(user)
 
@@ -259,7 +293,7 @@ class RepinScript(Browser):
                 self.click('board', board)
                 break
 
-    def __call__(self, user, keyword, boards, count):
+    def __call__(self, user, keyword, board, count):
         '''Run selenium script for RepinScript.'''
         try:
             self.set_up(user)
@@ -267,7 +301,7 @@ class RepinScript(Browser):
             for pin_url in self.parser.get_pin_urls(self.get_json())[:count]:
                 self.get_url(pin_url)
                 self.click_pin()
-                self.click_board(random.choice(boards).name)
+                self.click_board(board.name)
         finally:
             self.destroy(user)
 
@@ -378,43 +412,5 @@ class UnfollowScript(Browser):
             self.get_url(user.following_url())
             self.click_pinners()
             self.click_unfollows(count)
-        finally:
-            self.destroy(user)
-
-
-class ScrapeScript(Browser):
-
-    '''Scrape random pins on pinterest.'''
-
-    def __init__(self):
-        self.parser = Parser()
-
-    def __call__(self, user, keyword):
-        '''Run selenium script for ScrapeScript.'''
-        try:
-            self.set_up(user)
-            self.get_url(keyword.search_url())
-            for pin_data in self.parser.get_pins_data(self.get_json()):
-                Pin.objects.update_or_create(keyword=keyword, **pin_data)
-        finally:
-            self.destroy(user)
-
-
-class ScrapeKeywordScript(Browser):
-
-    '''Get pinterest keyword suggestions.'''
-
-    def __init__(self):
-        self.parser = Parser()
-
-    def __call__(self, user, keywords):
-        '''Run selenium script for ScrapeKeywordScript.'''
-        try:
-            self.set_up(user)
-            for keyword in keywords:
-                self.get_url(keyword.search_url())
-                for keyword_data in self.parser.get_keywords_data(
-                        self.get_json(), keyword):
-                    Keyword.objects.update_or_create(**keyword_data)
         finally:
             self.destroy(user)

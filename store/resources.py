@@ -93,4 +93,4 @@ class KeywordResource(resources.ModelResource):
 
     class Meta:
         model = Keyword
-        exclude = ('scraped', 'added_at', )
+        exclude = ('added_at', )

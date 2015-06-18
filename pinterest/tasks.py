@@ -9,8 +9,8 @@ from pinterest.mailbox import EmailException, MailBox
 from pinterest.models import User
 from pinterest.scripts import (
     CommentScript, ConfirmEmailScript, CreateBoardsScript, CreateUserScript,
-    FollowScript, LikeScript, LoginScript, RepinScript, ScrapeKeywordsScript,
-    ScrapeScript, SyncScript, UnfollowScript
+    FollowScript, LikeScript, LoginScript, RepinScript, SyncScript,
+    UnfollowScript, InteractScript
 )
 from pinterest_marketing.lock import LockException, lock
 from store.models import Board, Comment, Keyword
@@ -38,6 +38,17 @@ def create_user_task(self, user):
     try:
         with lock(user.id):
             CreateUserScript()(user)
+    except Exception:
+        log.error('Traceback: %s', traceback.format_exc())
+        raise
+
+
+@shared_task(bind=True)
+def interact_task(self, user):
+    '''Celery task for interacting with pinterest user.'''
+    try:
+        with lock(user.id):
+            InteractScript()(user)
     except Exception:
         log.error('Traceback: %s', traceback.format_exc())
         raise
@@ -98,11 +109,11 @@ def sync_task(self, user):
 def repin_task(self, user):
     '''Celery task for repinning random pins.'''
     try:
-        keyword = Keyword.random.first()
-        boards = user.board_set.filter(category=keyword.category).all()
+        board = user.board_set.random.first()
+        keyword = Keyword.random.filter(category=board.category).first()
         count = random.randint(config.MINIMUM_REPIN, config.MAXIMUM_REPIN)
         with lock(user.id):
-            RepinScript()(user, keyword, boards, count)
+            RepinScript()(user, keyword, board, count)
     except LockException:
         log.warn('Retrying task %d time', self.request.retries)
         self.retry(countdown=100)
@@ -132,8 +143,10 @@ def comment_task(self, user):
     '''Celery task for commenting on random pins.'''
     try:
         keyword = Keyword.random.first()
-        comments = Comment.random.all()
         count = random.randint(config.MINIMUM_COMMENT, config.MAXIMUM_COMMENT)
+        comments = Comment.random.filter(category=keyword.category).all()[
+            :count
+        ]
         with lock(user.id):
             CommentScript()(user, keyword, comments, count)
     except LockException:
@@ -169,36 +182,6 @@ def unfollow_task(self, user):
         )
         with lock(user.id):
             UnfollowScript()(user, count)
-    except LockException:
-        log.warn('Retrying task %d time', self.request.retries)
-        self.retry(countdown=100)
-    except Exception:
-        log.error('Traceback: %s', traceback.format_exc())
-        raise
-
-
-@shared_task(bind=True, max_retries=1)
-def scrape_task(self, user):
-    '''Celery task for scraping random pins.'''
-    try:
-        keyword = Keyword.random.first()
-        with lock(user.id):
-            ScrapeScript()(user, keyword)
-    except LockException:
-        log.warn('Retrying task %d time', self.request.retries)
-        self.retry(countdown=100)
-    except Exception:
-        log.error('Traceback: %s', traceback.format_exc())
-        raise
-
-
-@shared_task(bind=True, max_retries=1)
-def scrape_keywords_task(self, keywords):
-    '''Celery task for scraping pinterest keywords suggestions.'''
-    try:
-        user = User.random.first()
-        with lock(user.id):
-            ScrapeKeywordsScript()(user, keywords)
     except LockException:
         log.warn('Retrying task %d time', self.request.retries)
         self.retry(countdown=100)
@@ -247,10 +230,3 @@ def unfollow_periodic_task(self, user):
     '''Periodic celery task for unfollowing random users.'''
     for user in User.available.all():
         unfollow_task.delay(user)
-
-
-@shared_task(bind=True)
-def scrape_periodic_task(self, user):
-    '''Periodic celery task for scraping random pins.'''
-    for user in User.available.all():
-        scrape_task.delay(user)

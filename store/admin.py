@@ -1,9 +1,8 @@
 from django import forms
-from django.contrib import admin, messages
+from django.contrib import admin
 from django.db import models
 from import_export.admin import ImportExportModelAdmin
 
-from pinterest.tasks import scrape_keywords_task
 from store.models import (
     About, Board, Comment, Email, FirstName, Keyword, LastName, Location,
     Proxy, UserAgent
@@ -101,27 +100,8 @@ class KeywordAdmin(ImportExportModelAdmin, admin.ModelAdmin):
     resource_class = KeywordResource
     formfield_overrides = {models.TextField: {'widget': forms.TextInput}}
     search_fields = ('keyword', )
-    list_filter = ('category', 'scraped')
-    list_display = ('keyword', 'category', 'scraped')
-    actions = ('scrape_keywords_action', )
-
-    def display_message(self, request, task_name, count):
-        '''Display message in list view for admin action.'''
-        if count == 1:
-            message = 'Delayed {} for 1 keyword.'.format(task_name)
-        else:
-            message = 'Delayed {} for {} keywords.'.format(task_name, count),
-        self.message_user(request, message, level=messages.SUCCESS)
-
-    def scrape_keywords_action(self, request, queryset):
-        '''Admin action for scraping pinterest keywords suggestions.'''
-        queryset = queryset.exclude(scraped=True)
-        scrape_keywords_task.delay(queryset)
-        self.display_message(request, 'scrape_keywords_task', queryset.count())
-
-    scrape_keywords_action.short_description = (
-        'Scrape keywords task for selected keywords'
-    )
+    list_filter = ('category', )
+    list_display = ('keyword', 'category')
 
 
 @admin.register(Comment)

@@ -1,6 +1,5 @@
 import json
 import logging
-import random
 import re
 import time
 
@@ -65,21 +64,21 @@ class Browser(object):
         '''Dispatch click event on html element.'''
         element.click()
         log.debug('Clicked %s', name)
-        time.sleep(random.uniform(5, 10))
+        time.sleep(5)
 
     def send_keys(self, name, element, text):
         '''Set html element input to text.'''
         element.send_keys(text)
         log.debug('Sent %s to %s', text, name)
-        time.sleep(random.uniform(5, 10))
+        time.sleep(5)
 
     def select(self, name, element, value):
         '''Select option by value.'''
         options = Select(element)
         options.select_by_value(value)
         log.debug('Selected %s for %s', value, name)
+        time.sleep(5)
 
     def clear(self, name, element):
         '''Clear element input.'''
         element.clear()
-        log.debug('Cleared %s input', name)

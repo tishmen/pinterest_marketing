@@ -3,11 +3,11 @@ from django.contrib import admin, messages
 from django.db import models
 
 from pinterest.forms import UserAdminForm
-from pinterest.models import Board, Pin, User
+from pinterest.models import Board, User
 from pinterest.tasks import (
     comment_task, confirm_email_task, create_boards_task, create_user_task,
-    follow_task, like_task, login_task, repin_task, scrape_task, sync_task,
-    unfollow_task
+    follow_task, like_task, login_task, repin_task, sync_task,
+    unfollow_task, interact_task
 )
 
 
@@ -31,101 +31,144 @@ class UserAdmin(admin.ModelAdmin):
         'follower_count', 'following_count'
     )
     actions = (
-        'login_action', 'create_user_action', 'confirm_email_action',
-        'create_boards_action', 'sync_action', 'repin_action', 'like_action',
-        'comment_action', 'follow_action', 'unfollow_action', 'scrape_action'
+        'login_action', 'create_user_action', 'interact_action',
+        'confirm_email_action', 'create_boards_action', 'sync_action',
+        'repin_action', 'like_action', 'comment_action', 'follow_action',
+        'unfollow_action'
     )
     form = UserAdminForm
     inlines = (BoardInline, )
 
-    def display_message(self, request, task_name, count):
-        '''Display message in list view for admin action.'''
+    def get_message(self, task_name, count):
         if count == 1:
-            message = 'Delayed {} for 1 user.'.format(task_name)
-        else:
-            message = 'Delayed {} for {} users.'.format(task_name, count),
-        self.message_user(request, message, level=messages.SUCCESS)
+            return 'Delayed {} for 1 user.'.format(task_name)
+        return 'Delayed {} for {} users.'.format(task_name, count)
 
     def login_action(self, request, queryset):
         '''Admin action for loging pinterest users.'''
         for user in queryset:
             login_task.delay(user)
-        self.display_message(request, 'login_task', queryset.count())
+        self.message_user(
+            request,
+            self.get_message('login_task', queryset.count()),
+            level=messages.SUCCESS
+        )
 
     def create_user_action(self, request, queryset):
         '''Admin action for creating pinterest users.'''
         queryset = queryset.filter(cookies='[]')
         for user in queryset:
             create_user_task.delay(user)
-        self.display_message(request, 'create_user_task', queryset.count())
+        self.message_user(
+            request,
+            self.get_message('create_user_task', queryset.count()),
+            level=messages.SUCCESS
+        )
+
+    def interact_action(self, request, queryset):
+        '''Admin action for interacting with pinterest users.'''
+        queryset = queryset.exclude(cookies='[]')
+        for user in queryset:
+            interact_task.delay(user)
+        self.message_user(
+            request,
+            self.get_message('interact_task', queryset.count()),
+            level=messages.SUCCESS
+        )
 
     def confirm_email_action(self, request, queryset):
         '''Admin action for confirming pinterest email.'''
         queryset = queryset.exclude(cookies='[]')
         for user in queryset:
             confirm_email_task.delay(user)
-        self.display_message(request, 'confirm_email_task', queryset.count())
+        self.message_user(
+            request,
+            self.get_message('confirm_email_task', queryset.count()),
+            level=messages.SUCCESS
+        )
 
     def create_boards_action(self, request, queryset):
         '''Admin action for creating pinterest boards.'''
         queryset = queryset.exclude(cookies='[]')
         for user in queryset:
             create_boards_task.delay(user)
-        self.display_message(request, 'create_boards_task', queryset.count())
+        self.message_user(
+            request,
+            self.get_message('create_boards_task', queryset.count()),
+            level=messages.SUCCESS
+        )
 
     def sync_action(self, request, queryset):
         '''Admin action for syncing pinterest users.'''
         queryset = queryset.exclude(cookies='[]')
         for user in queryset:
             sync_task.delay(user)
-        self.display_message(request, 'sync_task', queryset.count())
+        self.message_user(
+            request,
+            self.get_message('sync_task', queryset.count()),
+            level=messages.SUCCESS
+        )
 
     def like_action(self, request, queryset):
         '''Admin action for liking random pinterest pins.'''
         queryset = queryset.exclude(cookies='[]')
         for user in queryset:
             like_task.delay(user)
-        self.display_message(request, 'like_task', queryset.count())
+        self.message_user(
+            request,
+            self.get_message('like_task', queryset.count()),
+            level=messages.SUCCESS
+        )
 
     def comment_action(self, request, queryset):
         '''Admin action for commenting on random pinterest pins.'''
         queryset = queryset.exclude(cookies='[]')
         for user in queryset:
             comment_task.delay(user)
-        self.display_message(request, 'comment_task', queryset.count())
+        self.message_user(
+            request,
+            self.get_message('comment_task', queryset.count()),
+            level=messages.SUCCESS
+        )
 
     def repin_action(self, request, queryset):
         '''Admin action for repinning random pinterest pins.'''
         queryset = queryset.exclude(cookies='[]')
         for user in queryset:
             repin_task.delay(user)
-        self.display_message(request, 'repin_task', queryset.count())
+        self.message_user(
+            request,
+            self.get_message('repin_task', queryset.count()),
+            level=messages.SUCCESS
+        )
 
     def follow_action(self, request, queryset):
         '''Admin action for following random pinterest users.'''
         queryset = queryset.exclude(cookies='[]')
         for user in queryset:
             follow_task.delay(user)
-        self.display_message(request, 'follow_task', queryset.count())
+        self.message_user(
+            request,
+            self.get_message('follow_task', queryset.count()),
+            level=messages.SUCCESS
+        )
 
     def unfollow_action(self, request, queryset):
         '''Admin action for unfollowing random pinterest users.'''
         queryset = queryset.exclude(cookies='[]')
         for user in queryset:
             unfollow_task.delay(user)
-        self.display_message(request, 'unfollow_task', queryset.count())
-
-    def scrape_action(self, request, queryset):
-        '''Admin action for scraping random pinterest pins.'''
-        queryset = queryset.exclude(cookies='[]')
-        for user in queryset:
-            scrape_task.delay(user)
-        self.display_message(request, 'scrape_task', queryset.count())
+        self.message_user(
+            request,
+            self.get_message('unfollow_task', queryset.count()),
+            level=messages.SUCCESS
+        )
 
     login_action.short_description = 'Login task for selected users'
     create_user_action.short_description = (
         'Create user task for selected users'
     )
+    interact_action.short_description = 'Interact task for selected users'
     confirm_email_action.short_description = (
         'Confirm email task for selected users'
     )
@@ -138,7 +181,6 @@ class UserAdmin(admin.ModelAdmin):
     repin_action.short_description = 'Repin task for selected users'
     follow_action.short_description = 'Follow task for selected users'
     unfollow_action.short_description = 'Unfollow task for selected users'
-    scrape_action.short_description = 'Scrape task for selected users'
 
 
 @admin.register(Board)
@@ -151,17 +193,4 @@ class BoardAdmin(admin.ModelAdmin):
     list_display = (
         'name', 'description', 'category', 'user', 'pin_count',
         'follower_count', 'collaborator_count'
-    )
-
-
-@admin.register(Pin)
-class PinAdmin(admin.ModelAdmin):
-
-    '''Admin integration for pin.'''
-
-    formfield_overrides = {models.TextField: {'widget': forms.TextInput}}
-    search_fields = ('title', 'description', 'link')
-    list_display = (
-        'title', 'description', 'link', 'repin_count', 'like_count',
-        'comment_count'
     )

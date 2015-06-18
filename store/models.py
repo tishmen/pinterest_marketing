@@ -196,6 +196,9 @@ class Comment(models.Model):
     )
     added_at = models.DateTimeField(auto_now_add=True)
 
+    objects = models.Manager()
+    random = RandomManager()
+
     def spin(self):
         '''Return spun content from spintax format.'''
         text_spinner = TextSpinner()
@@ -217,14 +220,13 @@ class Keyword(models.Model):
         max_length=21,
         choices=((category, category) for category in CATEGORIES)
     )
-    scraped = models.BooleanField(default=False)
     added_at = models.DateTimeField(auto_now_add=True)
 
     objects = models.Manager()
     random = RandomManager()
 
-    def search_url(self):
-        '''Return pinterest search url for keyword.'''
+    def url(self):
+        '''Return search query url for keyword.'''
         return 'https://www.pinterest.com/search/?q={}'.format(
             self.keyword.replace(' ', '+')
         )

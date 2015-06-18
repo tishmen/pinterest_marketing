@@ -27,16 +27,6 @@ class AvailableUserManager(models.Manager):
         return queryset.exclude(cookies='[]')
 
 
-class RandomUserManager(models.Manager):
-
-    '''Custom manager for user. Return available users in random order.'''
-
-    def get_queryset(self):
-        '''Override model manager get_queryset method.'''
-        queryset = super(RandomUserManager, self).get_queryset()
-        return queryset.exclude(cookies='[]').order_by('?')
-
-
 class User(models.Model):
 
     '''Main storage for user.'''
@@ -61,7 +51,6 @@ class User(models.Model):
 
     objects = models.Manager()
     available = AvailableUserManager()
-    random = RandomUserManager()
 
     @staticmethod
     def get_name(first, last):
@@ -132,23 +121,3 @@ class Board(models.Model):
 
     def __str__(self):
         return self.name
-
-
-class Pin(models.Model):
-
-    '''Main storage for pinterest pin.'''
-
-    keyword = models.ForeignKey('store.Keyword')
-    id = models.BigIntegerField(primary_key=True)
-    title = models.TextField()
-    description = models.TextField()
-    link = models.URLField(unique=True)
-    image = models.URLField(unique=True)
-    image_signature = models.CharField(max_length=32, unique=True)
-    repin_count = models.PositiveIntegerField(default=0)
-    like_count = models.PositiveIntegerField(default=0)
-    comment_count = models.PositiveIntegerField(default=0)
-    added_at = models.DateTimeField(auto_now_add=True)
-
-    def __str__(self):
-        return self.title
