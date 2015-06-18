@@ -1,12 +1,12 @@
-import random
 import logging
+import random
 
 from selenium.common.exceptions import WebDriverException
 
-from pinterest.models import Board
 from pinterest.browser import Browser
-from pinterest.selectors import *
+from pinterest.models import Board
 from pinterest.parser import Parser
+from pinterest.selectors import *
 
 log = logging.getLogger('pinterest_marketing')
 
@@ -41,6 +41,9 @@ class LoginScript(Browser):
                 self.click_login()
             except WebDriverException:
                 pass
+        except Exception:
+            self.save_screenshot(user)
+            self.save_source(user)
         finally:
             self.destroy(user)
 
@@ -163,6 +166,9 @@ class CreateUserScript(Browser):
             self.set_about(user.about)
             self.set_location(user.location)
             self.click_save_settings()
+        except Exception:
+            self.save_screenshot(user)
+            self.save_source(user)
         finally:
             self.destroy(user)
 
@@ -181,11 +187,14 @@ class ConfirmEmailScript(Browser):
 
     '''Confirm email on pinterest.'''
 
-    def __call__(self, user, link):
+    def __call__(self, user, url):
         '''Run selenium script for ConfirmEmailScript.'''
         try:
             self.set_up(user)
-            self.get_url(link)
+            self.get_url(url)
+        except Exception:
+            self.save_screenshot(user)
+            self.save_source(user)
         finally:
             self.destroy(user)
 
@@ -225,6 +234,7 @@ class CreateBoardsScript(Browser):
             description=board.description,
             category=board.category,
         )
+        log.debug('Saved board %s', board)
 
     def __call__(self, user, boards):
         '''Run selenium script for CreateBoardsScript.'''
@@ -238,6 +248,9 @@ class CreateBoardsScript(Browser):
                 self.select_category(board.category)
                 self.click_save_board()
                 self.save_board(user, board)
+        except Exception:
+            self.save_screenshot(user)
+            self.save_source(user)
         finally:
             self.destroy(user)
 
@@ -253,23 +266,28 @@ class SyncScript(Browser):
         '''Update user rows from data.'''
         user.__dict__.update(data)
         user.save()
+        log.debug('Updated user %s', user)
 
     def update_board(self, board, data):
         '''Update board rows from data.'''
         board.__dict__.update(data)
         board.save()
+        log.debug('Updated board %s', board)
 
     def __call__(self, user, boards):
         '''Run selenium script for SyncUserScript.'''
         try:
             self.set_up(user)
             self.get_url(user.url())
-            data = self.parser.get_user_data(self.get_json())
-            self.update_user(user, data)
+            self.update_user(user, self.parser.get_user_data(self.get_json()))
             for board in boards:
                 self.get_url(board.url())
-                data = self.parser.get_board_data(self.get_json())
-                self.update_board(board, data)
+                self.update_board(
+                    board, self.parser.get_board_data(self.get_json())
+                )
+        except Exception:
+            self.save_screenshot(user)
+            self.save_source(user)
         finally:
             self.destroy(user)
 
@@ -297,11 +315,14 @@ class RepinScript(Browser):
         '''Run selenium script for RepinScript.'''
         try:
             self.set_up(user)
-            self.get_url(keyword.search_url())
+            self.get_url(keyword.url())
             for pin_url in self.parser.get_pin_urls(self.get_json())[:count]:
                 self.get_url(pin_url)
                 self.click_pin()
                 self.click_board(board.name)
+        except Exception:
+            self.save_screenshot(user)
+            self.save_source(user)
         finally:
             self.destroy(user)
 
@@ -324,10 +345,13 @@ class LikeScript(Browser):
         '''Run selenium script for LikeScript.'''
         try:
             self.set_up(user)
-            self.get_url(keyword.search_url())
+            self.get_url(keyword.url())
             for pin_url in self.parser.get_pin_urls(self.get_json())[:count]:
                 self.get_url(pin_url)
                 self.click_like()
+        except Exception:
+            self.save_screenshot(user)
+            self.save_source(user)
         finally:
             self.destroy(user)
 
@@ -352,11 +376,14 @@ class CommentScript(Browser):
         '''Run selenium script for CommentScript.'''
         try:
             self.set_up(user)
-            self.get_url(keyword.search_url())
+            self.get_url(keyword.url())
             for pin_url in self.parser.get_pin_urls(self.get_json())[:count]:
                 self.get_url(pin_url)
                 self.set_comment(random.choice(comments).spin())
                 self.click_comment()
+        except Exception:
+            self.save_screenshot(user)
+            self.save_source(user)
         finally:
             self.destroy(user)
 
@@ -379,11 +406,14 @@ class FollowScript(Browser):
         '''Run selenium script for CommentScript.'''
         try:
             self.set_up(user)
-            self.get_url(keyword.search_url())
+            self.get_url(keyword.url())
             self.get_url(self.parser.get_pin_repins_url(self.get_json()))
             for user_url in self.parser.get_user_urls(self.get_json())[:count]:
                 self.get_url(user_url)
                 self.click_follow()
+        except Exception:
+            self.save_screenshot(user)
+            self.save_source(user)
         finally:
             self.destroy(user)
 
@@ -412,5 +442,8 @@ class UnfollowScript(Browser):
             self.get_url(user.following_url())
             self.click_pinners()
             self.click_unfollows(count)
+        except Exception:
+            self.save_screenshot(user)
+            self.save_source(user)
         finally:
             self.destroy(user)

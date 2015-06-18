@@ -27,6 +27,16 @@ class AvailableUserManager(models.Manager):
         return queryset.exclude(cookies='[]')
 
 
+class RandomManager(models.Manager):
+
+    '''Custom manager. Return rows in random order.'''
+
+    def get_queryset(self):
+        '''Override model manager get_queryset method.'''
+        queryset = super(RandomManager, self).get_queryset()
+        return queryset.order_by('?')
+
+
 class User(models.Model):
 
     '''Main storage for user.'''
@@ -110,8 +120,10 @@ class Board(models.Model):
     description = models.CharField(max_length=500)
     pin_count = models.PositiveIntegerField(default=0)
     follower_count = models.PositiveIntegerField(default=0)
-    collaborator_count = models.PositiveIntegerField(default=0)
     added_at = models.DateTimeField(auto_now_add=True)
+
+    objects = models.Manager()
+    random = RandomManager()
 
     def url(self):
         '''Return pinterest board url'''

@@ -48,6 +48,7 @@ class Email(models.Model):
     random = RandomEmailManager()
 
     def __str__(self):
+        '''Override model string method.'''
         return self.address
 
 
@@ -67,6 +68,7 @@ class Proxy(models.Model):
     random = RandomProxyManager()
 
     def __str__(self):
+        '''Override model string method.'''
         return '{}:{}'.format(self.host, self.port)
 
 
@@ -81,6 +83,7 @@ class UserAgent(models.Model):
     random = RandomManager()
 
     def __str__(self):
+        '''Override model string method.'''
         return self.string
 
 
@@ -95,6 +98,7 @@ class FirstName(models.Model):
     random = RandomManager()
 
     def __str__(self):
+        '''Override model string method.'''
         return self.name
 
 
@@ -109,6 +113,7 @@ class LastName(models.Model):
     random = RandomManager()
 
     def __str__(self):
+        '''Override model string method.'''
         return self.name
 
 
@@ -122,13 +127,13 @@ class About(models.Model):
     objects = models.Manager()
     random = RandomManager()
 
+    def __str__(self):
+        '''Override model string method.'''
+        return self.about
+
     def spin(self):
         '''Return spun content from spintax format.'''
-        text_spinner = TextSpinner()
-        return text_spinner.spin(self.about)
-
-    def __str__(self):
-        return self.about
+        return TextSpinner()(self.about)
 
 
 class Location(models.Model):
@@ -138,16 +143,16 @@ class Location(models.Model):
     location = models.TextField(unique=True)
     added_at = models.DateTimeField(auto_now_add=True)
 
+    def __str__(self):
+        '''Override model string method.'''
+        return self.location
+
     def spin(self):
         '''Return spun content from spintax format.'''
-        text_spinner = TextSpinner()
-        return text_spinner.spin(self.location)
+        return TextSpinner()(self.location)
 
     objects = models.Manager()
     random = RandomManager()
-
-    def __str__(self):
-        return self.location
 
 
 class Board(models.Model):
@@ -168,18 +173,18 @@ class Board(models.Model):
     objects = models.Manager()
     random = RandomManager()
 
+    def __str__(self):
+        '''Override model string method.'''
+        return self.name
+
     def spin_name(self):
         '''Return spun name from spintax format.'''
-        text_spinner = TextSpinner()
-        return text_spinner.spin(self.name)
+        return TextSpinner()(self.name)
 
     def spin_description(self):
         '''Return spun description from spintax format.'''
         text_spinner = TextSpinner()
         return text_spinner.spin(self.description)
-
-    def __str__(self):
-        return self.name
 
 
 class Comment(models.Model):
@@ -199,13 +204,13 @@ class Comment(models.Model):
     objects = models.Manager()
     random = RandomManager()
 
+    def __str__(self):
+        '''Override model string method.'''
+        return self.comment
+
     def spin(self):
         '''Return spun content from spintax format.'''
-        text_spinner = TextSpinner()
-        return text_spinner.spin(self.comment)
-
-    def __str__(self):
-        return self.comment
+        return TextSpinner()(self.comment)
 
 
 class Keyword(models.Model):
@@ -225,11 +230,12 @@ class Keyword(models.Model):
     objects = models.Manager()
     random = RandomManager()
 
+    def __str__(self):
+        '''Override model string method.'''
+        return self.keyword
+
     def url(self):
         '''Return search query url for keyword.'''
         return 'https://www.pinterest.com/search/?q={}'.format(
             self.keyword.replace(' ', '+')
         )
-
-    def __str__(self):
-        return self.keyword

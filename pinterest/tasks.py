@@ -9,13 +9,20 @@ from pinterest.mailbox import EmailException, MailBox
 from pinterest.models import User
 from pinterest.scripts import (
     CommentScript, ConfirmEmailScript, CreateBoardsScript, CreateUserScript,
-    FollowScript, LikeScript, LoginScript, RepinScript, SyncScript,
-    UnfollowScript, InteractScript
+    FollowScript, InteractScript, LikeScript, LoginScript, RepinScript,
+    SyncScript, UnfollowScript
 )
 from pinterest_marketing.lock import LockException, lock
 from store.models import Board, Comment, Keyword
 
 log = logging.getLogger('pinterest_marketing')
+
+
+class ResourceException(Exception):
+
+    '''Exception for failed resource acquisition.'''
+
+    pass
 
 
 @shared_task(bind=True, max_retries=1)
@@ -25,7 +32,7 @@ def login_task(self, user):
         with lock(user.id):
             LoginScript()(user)
     except LockException:
-        log.warn('Retrying task %d time', self.request.retries)
+        log.warn('Retrying %s %d time', self.name, self.request.retries)
         self.retry(countdown=100)
     except Exception:
         log.error('Traceback: %s', traceback.format_exc())
@@ -64,10 +71,10 @@ def confirm_email_task(self, user):
         with lock(user.id):
             ConfirmEmailScript()(user, link)
     except EmailException:
-        log.warn('Retrying task %d time', self.request.retries)
-        self.retry(countdown=300)
+        log.warn('Retrying %s %d time', self.name, self.request.retries)
+        self.retry(countdown=500)
     except LockException:
-        log.warn('Retrying task %d time', self.request.retries)
+        log.warn('Retrying %s %d time', self.name, self.request.retries)
         self.retry(countdown=100)
     except Exception:
         log.error('Traceback: %s', traceback.format_exc())
@@ -80,10 +87,14 @@ def create_boards_task(self, user):
     try:
         count = random.randint(config.MINIMUM_BOARD, config.MAXIMUM_BOARD)
         boards = Board.random.all()[:count]
+        if not boards:
+            raise ResourceException(
+                'No board resources for {}'.format(self.name)
+            )
         with lock(user.id):
             CreateBoardsScript()(user, boards)
     except LockException:
-        log.warn('Retrying task %d time', self.request.retries)
+        log.warn('Retrying %s %d time', self.name, self.request.retries)
         self.retry(countdown=100)
     except Exception:
         log.error('Traceback: %s', traceback.format_exc())
@@ -98,7 +109,7 @@ def sync_task(self, user):
         with lock(user.id):
             SyncScript()(user, boards)
     except LockException:
-        log.warn('Retrying task %d time', self.request.retries)
+        log.warn('Retrying %s %d time', self.name, self.request.retries)
         self.retry(countdown=100)
     except Exception:
         log.error('Traceback: %s', traceback.format_exc())
@@ -109,13 +120,21 @@ def sync_task(self, user):
 def repin_task(self, user):
     '''Celery task for repinning random pins.'''
     try:
-        board = user.board_set.random.first()
+        board = user.board_set(manager='random').first()
+        if not board:
+            raise ResourceException(
+                'No board resources for {}'.format(self.name)
+            )
         keyword = Keyword.random.filter(category=board.category).first()
+        if not keyword:
+            raise ResourceException(
+                'No keyword resources for {}'.format(self.name)
+            )
         count = random.randint(config.MINIMUM_REPIN, config.MAXIMUM_REPIN)
         with lock(user.id):
             RepinScript()(user, keyword, board, count)
     except LockException:
-        log.warn('Retrying task %d time', self.request.retries)
+        log.warn('Retrying %s %d time', self.name, self.request.retries)
         self.retry(countdown=100)
     except Exception:
         log.error('Traceback: %s', traceback.format_exc())
@@ -127,11 +146,15 @@ def like_task(self, user):
     '''Celery task for liking random pins.'''
     try:
         keyword = Keyword.random.first()
+        if not keyword:
+            raise ResourceException(
+                'No keyword resources for {}'.format(self.name)
+            )
         count = random.randint(config.MINIMUM_LIKE, config.MAXIMUM_LIKE)
         with lock(user.id):
             LikeScript()(user, keyword, count)
     except LockException:
-        log.warn('Retrying task %d time', self.request.retries)
+        log.warn('Retrying %s %d time', self.name, self.request.retries)
         self.retry(countdown=100)
     except Exception:
         log.error('Traceback: %s', traceback.format_exc())
@@ -143,14 +166,20 @@ def comment_task(self, user):
     '''Celery task for commenting on random pins.'''
     try:
         keyword = Keyword.random.first()
+        if not keyword:
+            raise ResourceException(
+                'No keyword resources for {}'.format(self.name)
+            )
+        comments = Comment.random.filter(category=keyword.category).all()
+        if not comments:
+            raise ResourceException(
+                'No comment resources for {}'.format(self.name)
+            )
         count = random.randint(config.MINIMUM_COMMENT, config.MAXIMUM_COMMENT)
-        comments = Comment.random.filter(category=keyword.category).all()[
-            :count
-        ]
         with lock(user.id):
             CommentScript()(user, keyword, comments, count)
     except LockException:
-        log.warn('Retrying task %d time', self.request.retries)
+        log.warn('Retrying %s %d time', self.name, self.request.retries)
         self.retry(countdown=100)
     except Exception:
         log.error('Traceback: %s', traceback.format_exc())
@@ -162,11 +191,15 @@ def follow_task(self, user):
     '''Celery task for following random users.'''
     try:
         keyword = Keyword.random.first()
+        if not keyword:
+            raise ResourceException(
+                'No keyword resources for {}'.format(self.name)
+            )
         count = random.randint(config.MINIMUM_FOLLOW, config.MAXIMUM_FOLLOW)
         with lock(user.id):
             FollowScript()(user, keyword, count)
     except LockException:
-        log.warn('Retrying task %d time', self.request.retries)
+        log.warn('Retrying %s %d time', self.name, self.request.retries)
         self.retry(countdown=100)
     except Exception:
         log.error('Traceback: %s', traceback.format_exc())
@@ -183,7 +216,7 @@ def unfollow_task(self, user):
         with lock(user.id):
             UnfollowScript()(user, count)
     except LockException:
-        log.warn('Retrying task %d time', self.request.retries)
+        log.warn('Retrying %s %d time', self.name, self.request.retries)
         self.retry(countdown=100)
     except Exception:
         log.error('Traceback: %s', traceback.format_exc())
@@ -193,40 +226,52 @@ def unfollow_task(self, user):
 @shared_task(bind=True)
 def sync_periodic_task(self, user):
     '''Periodic celery task for syncing pinterest users.'''
+    countdown = random.randint(50, 100)
     for user in User.available.all():
-        sync_task.delay(user)
+        countdown += random.randint(50, 100)
+        sync_task.apply_async((user, ), countdown=countdown)
 
 
 @shared_task(bind=True)
 def repin_periodic_task(self, user):
     '''Periodic celery task for repining random users.'''
+    countdown = random.randint(50, 100)
     for user in User.available.all():
-        repin_task.delay(user)
+        countdown += random.randint(50, 100)
+        repin_task.apply_async((user, ), countdown=countdown)
 
 
 @shared_task(bind=True)
 def like_periodic_task(self, user):
     '''Periodic celery task for liking random users.'''
+    countdown = random.randint(50, 100)
     for user in User.available.all():
-        like_task.delay(user)
+        countdown += random.randint(50, 100)
+        like_task.apply_async((user, ), countdown=countdown)
 
 
 @shared_task(bind=True)
 def comment_periodic_task(self, user):
     '''Periodic celery task for commenting on random users.'''
+    countdown = random.randint(50, 100)
     for user in User.available.all():
-        comment_task.delay(user)
+        countdown += random.randint(50, 100)
+        comment_task.apply_async((user, ), countdown=countdown)
 
 
 @shared_task(bind=True)
 def follow_periodic_task(self, user):
     '''Periodic celery task for following random users.'''
+    countdown = random.randint(50, 100)
     for user in User.available.all():
-        follow_task.delay(user)
+        countdown += random.randint(50, 100)
+        follow_task.apply_async((user, ), countdown=countdown)
 
 
 @shared_task(bind=True)
 def unfollow_periodic_task(self, user):
     '''Periodic celery task for unfollowing random users.'''
+    countdown = random.randint(50, 100)
     for user in User.available.all():
-        unfollow_task.delay(user)
+        countdown += random.randint(50, 100)
+        unfollow_task.apply_async((user, ), countdown=countdown)

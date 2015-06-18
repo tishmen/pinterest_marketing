@@ -1,10 +1,13 @@
 import json
 import logging
+import os
 import re
 import time
 
 from selenium import webdriver
 from selenium.webdriver.support.ui import Select
+
+from pinterest_marketing.settings import ERROR_DIR
 
 log = logging.getLogger('pinterest_marketing')
 
@@ -82,3 +85,22 @@ class Browser(object):
     def clear(self, name, element):
         '''Clear element input.'''
         element.clear()
+
+    def save_screenshot(self, user):
+        '''Save screenshot to disk.'''
+        path = os.path.join(
+            ERROR_DIR, '{}_{}.png'.format(
+                user, time.strftime('%Y_%m_%d_%H_%M_%S')
+            )
+        )
+        self.browser.get_screenshot_as_file(path)
+
+    def save_source(self, user):
+        '''Save page source to disk.'''
+        path = os.path.join(
+            ERROR_DIR, '{}_{}.html'.format(
+                user, time.strftime('%Y_%m_%d_%H_%M_%S')
+            )
+        )
+        with open(path, 'w') as file:
+            file.write(self.browser.page_source)

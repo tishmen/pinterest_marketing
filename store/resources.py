@@ -6,7 +6,16 @@ from store.models import (
 )
 
 
-class EmailResource(resources.ModelResource):
+class CustomResource(resources.ModelResource):
+
+    '''Custom resource class containing dehydrate id functionality.'''
+
+    def dehydrate_id(self, keyword):
+        '''Remove id values on export.'''
+        return ''
+
+
+class EmailResource(CustomResource):
 
     '''Resource class for email.'''
 
@@ -15,7 +24,7 @@ class EmailResource(resources.ModelResource):
         exclude = ('added_at', )
 
 
-class ProxyResource(resources.ModelResource):
+class ProxyResource(CustomResource):
 
     '''Resource class for proxy.'''
 
@@ -24,7 +33,7 @@ class ProxyResource(resources.ModelResource):
         exclude = ('added_at', )
 
 
-class UserAgentResource(resources.ModelResource):
+class UserAgentResource(CustomResource):
 
     '''Resource class for user agent.'''
 
@@ -33,7 +42,7 @@ class UserAgentResource(resources.ModelResource):
         exclude = ('added_at', )
 
 
-class FirstNameResource(resources.ModelResource):
+class FirstNameResource(CustomResource):
 
     '''Resource class for first name.'''
 
@@ -42,7 +51,7 @@ class FirstNameResource(resources.ModelResource):
         exclude = ('added_at', )
 
 
-class LastNameResource(resources.ModelResource):
+class LastNameResource(CustomResource):
 
     '''Resource class for first name.'''
 
@@ -51,7 +60,7 @@ class LastNameResource(resources.ModelResource):
         exclude = ('added_at', )
 
 
-class AboutResource(resources.ModelResource):
+class AboutResource(CustomResource):
 
     '''Resource class for about user.'''
 
@@ -60,7 +69,7 @@ class AboutResource(resources.ModelResource):
         exclude = ('added_at', )
 
 
-class LocationResource(resources.ModelResource):
+class LocationResource(CustomResource):
 
     '''Resource class for location.'''
 
@@ -69,7 +78,7 @@ class LocationResource(resources.ModelResource):
         exclude = ('added_at', )
 
 
-class BoardResource(resources.ModelResource):
+class BoardResource(CustomResource):
 
     '''Resource class for board.'''
 
@@ -78,7 +87,7 @@ class BoardResource(resources.ModelResource):
         exclude = ('added_at', )
 
 
-class CommentResource(resources.ModelResource):
+class CommentResource(CustomResource):
 
     '''Resource class for comment.'''
 
@@ -87,7 +96,7 @@ class CommentResource(resources.ModelResource):
         exclude = ('added_at', )
 
 
-class KeywordResource(resources.ModelResource):
+class KeywordResource(CustomResource):
 
     '''Resource class for keyword.'''
 

@@ -10,7 +10,7 @@ class TextSpinner(object):
         '''Select randomly one of the words in a spintax group'''
         return random.choice(match.group(1).split('|'))
 
-    def spin(self, string):
+    def __call__(self, string):
         '''Spin spintax formated string.'''
         r = re.compile('{([^{}]*)}')
         while True:

@@ -6,8 +6,8 @@ from pinterest.forms import UserAdminForm
 from pinterest.models import Board, User
 from pinterest.tasks import (
     comment_task, confirm_email_task, create_boards_task, create_user_task,
-    follow_task, like_task, login_task, repin_task, sync_task,
-    unfollow_task, interact_task
+    follow_task, interact_task, like_task, login_task, repin_task, sync_task,
+    unfollow_task
 )
 
 
@@ -24,7 +24,6 @@ class UserAdmin(admin.ModelAdmin):
 
     '''Admin integration for user.'''
 
-    formfield_overrides = {models.TextField: {'widget': forms.TextInput}}
     search_fields = ('name', 'username')
     list_display = (
         'name', 'username', 'board_count', 'pin_count', 'like_count',
@@ -37,6 +36,7 @@ class UserAdmin(admin.ModelAdmin):
         'unfollow_action'
     )
     form = UserAdminForm
+    formfield_overrides = {models.TextField: {'widget': forms.TextInput}}
     inlines = (BoardInline, )
 
     def get_message(self, task_name, count):
@@ -164,23 +164,23 @@ class UserAdmin(admin.ModelAdmin):
             level=messages.SUCCESS
         )
 
-    login_action.short_description = 'Login task for selected users'
+    login_action.short_description = 'login_task for selected users'
     create_user_action.short_description = (
-        'Create user task for selected users'
+        'create_user_task for selected users'
     )
-    interact_action.short_description = 'Interact task for selected users'
+    interact_action.short_description = 'interact_task for selected users'
     confirm_email_action.short_description = (
-        'Confirm email task for selected users'
+        'confirm_email_task for selected users'
     )
     create_boards_action.short_description = (
-        'Create boards task for selected users'
+        'create_boards_task for selected users'
     )
-    sync_action.short_description = 'Sync task for selected users'
-    like_action.short_description = 'Like task for selected users'
-    comment_action.short_description = 'Comment task for selected users'
-    repin_action.short_description = 'Repin task for selected users'
-    follow_action.short_description = 'Follow task for selected users'
-    unfollow_action.short_description = 'Unfollow task for selected users'
+    sync_action.short_description = 'sync_task for selected users'
+    like_action.short_description = 'like_task for selected users'
+    comment_action.short_description = 'comment_task for selected users'
+    repin_action.short_description = 'repin_task for selected users'
+    follow_action.short_description = 'follow_task for selected users'
+    unfollow_action.short_description = 'unfollow_task for selected users'
 
 
 @admin.register(Board)
@@ -192,5 +192,5 @@ class BoardAdmin(admin.ModelAdmin):
     list_filter = ('category', 'description')
     list_display = (
         'name', 'description', 'category', 'user', 'pin_count',
-        'follower_count', 'collaborator_count'
+        'follower_count'
     )
