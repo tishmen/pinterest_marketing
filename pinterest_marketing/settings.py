@@ -113,7 +113,6 @@ CONSTANCE_CONFIG = {
     'MINIMUM_LIKE_COUNT': (0, 'Minimum like count for pin'),
     'MINIMUM_COMMENT_COUNT': (0, 'Minimum comment count for pin'),
     'MINIMUM_PIN_COUNT': (1, 'Minimum pin count for board'),
-
     'MINIMUM_BOARD': (1, 'Minimum boards per task run'),
     'MAXIMUM_BOARD': (1, 'Maximum boards per task run'),
     'MINIMUM_LIKE': (1, 'Minimum likes per task run'),

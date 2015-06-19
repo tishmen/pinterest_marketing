@@ -37,9 +37,7 @@ CREATE_BOARDS_SELECTORS = {
     'save_board': (By.CSS_SELECTOR, '.saveBoardButton'),
 }
 
-LIKE_SELECTORS = {
-    'like': (By.CSS_SELECTOR, '.repinLike .LikeButton'),
-}
+LIKE_SELECTORS = {'like': (By.CSS_SELECTOR, '.repinLike .LikeButton'), }
 
 COMMENT_SELECTORS = {
     'comment_input': (By.CSS_SELECTOR, 'textarea.content'),
@@ -51,9 +49,7 @@ REPIN_SELECTORS = {
     'boards': (By.CSS_SELECTOR, '.sectionItems:nth-child(2) .BoardLabel'),
 }
 
-FOLLOW_SELECTORS = {
-    'follow': (By.CSS_SELECTOR, '.UserFollowButton'),
-}
+FOLLOW_SELECTORS = {'follow': (By.CSS_SELECTOR, '.UserFollowButton'), }
 
 UNFOLLOW_SELECTORS = {
     'pinners': (By.CSS_SELECTOR, 'a.navScopeBtn:nth-child(2)'),

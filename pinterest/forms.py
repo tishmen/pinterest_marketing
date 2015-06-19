@@ -8,8 +8,6 @@ from store.models import (
 
 class UserAdminForm(forms.ModelForm):
 
-    '''Custom user admin form with pre-set initial values.'''
-
     class Meta:
         model = User
         exclude = ('cookies', )
@@ -20,7 +18,7 @@ class UserAdminForm(forms.ModelForm):
         super(UserAdminForm, self).__init__(*args, **kwargs)
 
     def get_initial(self):
-        '''Return initial values dictionary from random store data.'''
+        '''Return user initial values dict.'''
         name = User.get_name(FirstName.random.first(), LastName.random.first())
         age = User.get_age()
         return {

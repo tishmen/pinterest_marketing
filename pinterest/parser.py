@@ -5,8 +5,6 @@ from constance import config
 
 class Parser(object):
 
-    '''Parse pinterest json response.'''
-
     def get_user_data(self, json):
         '''Return user data.'''
         data = json['resourceDataCache'][0]['data']

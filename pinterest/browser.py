@@ -1,6 +1,7 @@
 import json
 import logging
 import os
+import random
 import re
 import time
 
@@ -14,10 +15,8 @@ log = logging.getLogger('pinterest_marketing')
 
 class Browser(object):
 
-    '''Base class for browser functionality.'''
-
     def get_profile(self, user_agent, proxy):
-        '''Return firefox profile with set proxy and user agent.'''
+        '''Set proxy and user agent to profile.'''
         profile = webdriver.FirefoxProfile()
         profile.set_preference('general.useragent.override', user_agent.string)
         if proxy:
@@ -28,7 +27,7 @@ class Browser(object):
         return profile
 
     def set_up(self, user):
-        '''Set up and start browser instance.'''
+        '''Set up and start browser.'''
         profile = self.get_profile(user.user_agent, user.proxy)
         self.browser = webdriver.Firefox(firefox_profile=profile)
         self.browser.set_page_load_timeout(120)
@@ -39,48 +38,48 @@ class Browser(object):
         log.debug('Set up browser instance')
 
     def destroy(self, user):
-        '''Destroy browser instance.'''
+        '''Destroy browser.'''
         user.cookies = json.dumps(self.browser.get_cookies())
         user.save()
         self.browser.quit()
         log.debug('Destroyed browser instance')
 
     def get_url(self, url):
-        '''Navigate to url location.'''
+        '''Navigate to url.'''
         self.browser.get(url)
         log.debug('Got %s', url)
 
-    def get_element(self, key):
-        '''Return html element.'''
-        return self.browser.find_element(*self.selectors[key])
-
-    def get_elements(self, key):
-        '''Return html elements.'''
-        return self.browser.find_elements(*self.selectors[key])
-
     def get_json(self):
-        '''Return json from current page source. Pinterest specific.'''
+        '''Return json from page source.'''
         result = re.search('P.start.start\((.*)\);', self.browser.page_source)
         return json.loads(result.group(1))
 
+    def get_element(self, key):
+        '''Return webdriver element.'''
+        return self.browser.find_element(*self.selectors[key])
+
+    def get_elements(self, key):
+        '''Return webdriver elements.'''
+        return self.browser.find_elements(*self.selectors[key])
+
     def click(self, name, element):
-        '''Dispatch click event on html element.'''
+        '''Click event on element.'''
         element.click()
         log.debug('Clicked %s', name)
-        time.sleep(5)
+        time.sleep(random.randint(5, 10))
 
     def send_keys(self, name, element, text):
-        '''Set html element input to text.'''
+        '''Set element to text.'''
         element.send_keys(text)
         log.debug('Sent %s to %s', text, name)
-        time.sleep(5)
+        time.sleep(random.randint(5, 10))
 
     def select(self, name, element, value):
         '''Select option by value.'''
         options = Select(element)
         options.select_by_value(value)
         log.debug('Selected %s for %s', value, name)
-        time.sleep(5)
+        time.sleep(random.randint(5, 10))
 
     def clear(self, name, element):
         '''Clear element input.'''
@@ -88,19 +87,13 @@ class Browser(object):
 
     def save_screenshot(self, user):
         '''Save screenshot to disk.'''
-        path = os.path.join(
-            ERROR_DIR, '{}_{}.png'.format(
-                user, time.strftime('%Y_%m_%d_%H_%M_%S')
-            )
-        )
+        file = '{}_{}.png'.format(user, time.strftime('%Y_%m_%d_%H_%M_%S'))
+        path = os.path.join(ERROR_DIR, file)
         self.browser.get_screenshot_as_file(path)
 
     def save_source(self, user):
         '''Save page source to disk.'''
-        path = os.path.join(
-            ERROR_DIR, '{}_{}.html'.format(
-                user, time.strftime('%Y_%m_%d_%H_%M_%S')
-            )
-        )
+        file = '{}_{}.html'.format(user, time.strftime('%Y_%m_%d_%H_%M_%S'))
+        path = os.path.join(ERROR_DIR, file)
         with open(path, 'w') as file:
             file.write(self.browser.page_source)

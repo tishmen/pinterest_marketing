@@ -17,29 +17,23 @@ CATEGORIES = [
 ]
 
 
-class AvailableUserManager(models.Manager):
-
-    '''Custom manager for user. Return available users.'''
+class RandomUserManager(models.Manager):
 
     def get_queryset(self):
-        '''Override model manager get_queryset method.'''
-        queryset = super(AvailableUserManager, self).get_queryset()
-        return queryset.exclude(cookies='[]')
+        '''Return available users in random order.'''
+        queryset = super(RandomUserManager, self).get_queryset()
+        return queryset.exclude(cookies='[]').order_by('?')
 
 
 class RandomManager(models.Manager):
 
-    '''Custom manager. Return rows in random order.'''
-
     def get_queryset(self):
-        '''Override model manager get_queryset method.'''
+        '''Return rows in random order.'''
         queryset = super(RandomManager, self).get_queryset()
         return queryset.order_by('?')
 
 
 class User(models.Model):
-
-    '''Main storage for user.'''
 
     proxy = models.OneToOneField('store.Proxy', null=True, blank=True)
     user_agent = models.ForeignKey('store.UserAgent')
@@ -60,7 +54,7 @@ class User(models.Model):
     added_at = models.DateTimeField(auto_now_add=True)
 
     objects = models.Manager()
-    available = AvailableUserManager()
+    random = RandomUserManager()
 
     @staticmethod
     def get_name(first, last):
@@ -75,14 +69,15 @@ class User(models.Model):
 
     @staticmethod
     def get_password():
-        '''Return random alphanumeric password.'''
+        '''Return random password.'''
         alphanumerics = string.ascii_letters + string.digits
         return ''.join(random.choice(alphanumerics) for _ in range(10))
 
     @staticmethod
     def get_username(name, age):
-        '''Return username from name and age.'''
-        return '{}{}'.format(name.replace(' ', '').lower()[:11], age)
+        '''Return username.'''
+        if name:
+            return '{}{}'.format(name.replace(' ', '').lower()[:11], age)
 
     @staticmethod
     def get_photo():
@@ -94,7 +89,6 @@ class User(models.Model):
             return random.choice(available)
 
     def __str__(self):
-        '''Override model string method.'''
         return self.username
 
     def url(self):
@@ -107,8 +101,6 @@ class User(models.Model):
 
 
 class Board(models.Model):
-
-    '''Main storage for pinterest board.'''
 
     class Meta:
         unique_together = ('user', 'name', 'description')
@@ -128,7 +120,6 @@ class Board(models.Model):
     random = RandomManager()
 
     def __str__(self):
-        '''Override model string method.'''
         return self.name
 
     def url(self):

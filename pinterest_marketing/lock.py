@@ -7,14 +7,10 @@ log = logging.getLogger('pinterest_marketing')
 
 class LockException(Exception):
 
-    '''Exception for failed lock acquisition.'''
-
     pass
 
 
 class lock(object):
-
-    '''Context aware class for resource locking.'''
 
     def __init__(self, id):
         self.id = id

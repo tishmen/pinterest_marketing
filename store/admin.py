@@ -17,8 +17,6 @@ from store.resources import (
 @admin.register(Email)
 class EmailAdmin(ImportExportModelAdmin, admin.ModelAdmin):
 
-    '''Admin integration for email.'''
-
     resource_class = EmailResource
     search_fields = ('address', )
 
@@ -26,15 +24,11 @@ class EmailAdmin(ImportExportModelAdmin, admin.ModelAdmin):
 @admin.register(Proxy)
 class ProxyAdmin(ImportExportModelAdmin, admin.ModelAdmin):
 
-    '''Admin integration for proxy.'''
-
     resource_class = ProxyResource
 
 
 @admin.register(UserAgent)
 class UserAgentAdmin(ImportExportModelAdmin, admin.ModelAdmin):
-
-    '''Admin integration for user-agent.'''
 
     resource_class = UserAgentResource
     search_fields = ('string', )
@@ -44,8 +38,6 @@ class UserAgentAdmin(ImportExportModelAdmin, admin.ModelAdmin):
 @admin.register(FirstName)
 class FirstNameAdmin(ImportExportModelAdmin, admin.ModelAdmin):
 
-    '''Admin integration for first name.'''
-
     resource_class = FirstNameResource
     search_fields = ('name', )
     formfield_overrides = {models.TextField: {'widget': forms.TextInput}}
@@ -53,8 +45,6 @@ class FirstNameAdmin(ImportExportModelAdmin, admin.ModelAdmin):
 
 @admin.register(LastName)
 class LastNameAdmin(ImportExportModelAdmin, admin.ModelAdmin):
-
-    '''Admin integration for last name.'''
 
     resource_class = LastNameResource
     search_fields = ('name', )
@@ -64,16 +54,12 @@ class LastNameAdmin(ImportExportModelAdmin, admin.ModelAdmin):
 @admin.register(About)
 class AboutAdmin(ImportExportModelAdmin, admin.ModelAdmin):
 
-    '''Admin integration for about user.'''
-
     resource_class = AboutResource
     search_fields = ('about', )
 
 
 @admin.register(Location)
 class LocationAdmin(ImportExportModelAdmin, admin.ModelAdmin):
-
-    '''Admin integration for location.'''
 
     resource_class = LocationResource
     search_fields = ('location', )
@@ -83,8 +69,6 @@ class LocationAdmin(ImportExportModelAdmin, admin.ModelAdmin):
 @admin.register(Board)
 class BoardAdmin(ImportExportModelAdmin, admin.ModelAdmin):
 
-    '''Admin integration for board.'''
-
     resource_class = BoardResource
     search_fields = ('name', 'description')
     list_filter = ('category', )
@@ -92,25 +76,21 @@ class BoardAdmin(ImportExportModelAdmin, admin.ModelAdmin):
     formfield_overrides = {models.TextField: {'widget': forms.TextInput}}
 
 
-@admin.register(Keyword)
-class KeywordAdmin(ImportExportModelAdmin, admin.ModelAdmin):
-
-    '''Admin integration for keyword.'''
-
-    resource_class = KeywordResource
-    search_fields = ('keyword', )
-    list_filter = ('category', )
-    list_display = ('keyword', 'category')
-    formfield_overrides = {models.TextField: {'widget': forms.TextInput}}
-
-
 @admin.register(Comment)
 class CommentAdmin(ImportExportModelAdmin, admin.ModelAdmin):
-
-    '''Admin integration for comment.'''
 
     resource_class = CommentResource
     search_fields = ('comment', )
     list_filter = ('category', )
     list_display = ('comment', 'category')
+    formfield_overrides = {models.TextField: {'widget': forms.TextInput}}
+
+
+@admin.register(Keyword)
+class KeywordAdmin(ImportExportModelAdmin, admin.ModelAdmin):
+
+    resource_class = KeywordResource
+    search_fields = ('keyword', )
+    list_filter = ('category', )
+    list_display = ('keyword', 'category')
     formfield_overrides = {models.TextField: {'widget': forms.TextInput}}

@@ -5,10 +5,8 @@ from pinterest.models import CATEGORIES, User
 
 class RandomEmailManager(models.Manager):
 
-    '''Custom manager for email. Return available emails in random order.'''
-
     def get_queryset(self):
-        '''Override model manager get_queryset method.'''
+        '''Return available emails in random order.'''
         ids = [user.email.id for user in User.objects.all()]
         queryset = super(RandomEmailManager, self).get_queryset()
         return queryset.exclude(id__in=ids).order_by('?')
@@ -16,10 +14,8 @@ class RandomEmailManager(models.Manager):
 
 class RandomProxyManager(models.Manager):
 
-    '''Custom manager for proxy. Return available proxies in random order.'''
-
     def get_queryset(self):
-        '''Override model manager get_queryset method.'''
+        '''Return available proxies in random order.'''
         ids = [user.proxy.id for user in User.objects.all() if user.proxy]
         queryset = super(RandomProxyManager, self).get_queryset()
         return queryset.exclude(id__in=ids).order_by('?')
@@ -27,17 +23,13 @@ class RandomProxyManager(models.Manager):
 
 class RandomManager(models.Manager):
 
-    '''Custom manager. Return rows in random order.'''
-
     def get_queryset(self):
-        '''Override model manager get_queryset method.'''
+        '''Return rows in random order.'''
         queryset = super(RandomManager, self).get_queryset()
         return queryset.order_by('?')
 
 
 class Email(models.Model):
-
-    '''Main storage for email.'''
 
     address = models.EmailField(unique=True)
     password = models.CharField(max_length=10)
@@ -47,13 +39,10 @@ class Email(models.Model):
     random = RandomEmailManager()
 
     def __str__(self):
-        '''Override model string method.'''
         return self.address
 
 
 class Proxy(models.Model):
-
-    '''Main storage for proxy.'''
 
     class Meta:
         verbose_name_plural = 'Proxies'
@@ -67,13 +56,10 @@ class Proxy(models.Model):
     random = RandomProxyManager()
 
     def __str__(self):
-        '''Override model string method.'''
         return '{}:{}'.format(self.host, self.port)
 
 
 class UserAgent(models.Model):
-
-    '''Main storage for user-agent.'''
 
     string = models.TextField(unique=True)
     added_at = models.DateTimeField(auto_now_add=True)
@@ -82,14 +68,11 @@ class UserAgent(models.Model):
     random = RandomManager()
 
     def __str__(self):
-        '''Override model string method.'''
         return self.string
 
 
 class FirstName(models.Model):
 
-    '''Main storage for first name.'''
-
     name = models.TextField(unique=True)
     added_at = models.DateTimeField(auto_now_add=True)
 
@@ -97,14 +80,11 @@ class FirstName(models.Model):
     random = RandomManager()
 
     def __str__(self):
-        '''Override model string method.'''
         return self.name
 
 
 class LastName(models.Model):
 
-    '''Main storage for last name.'''
-
     name = models.TextField(unique=True)
     added_at = models.DateTimeField(auto_now_add=True)
 
@@ -112,13 +92,10 @@ class LastName(models.Model):
     random = RandomManager()
 
     def __str__(self):
-        '''Override model string method.'''
         return self.name
 
 
 class About(models.Model):
-
-    '''Main storage for about user.'''
 
     about = models.CharField(max_length=160, unique=True)
     added_at = models.DateTimeField(auto_now_add=True)
@@ -127,13 +104,10 @@ class About(models.Model):
     random = RandomManager()
 
     def __str__(self):
-        '''Override model string method.'''
         return self.about
 
 
 class Location(models.Model):
-
-    '''Main storage for location.'''
 
     location = models.TextField(unique=True)
     added_at = models.DateTimeField(auto_now_add=True)
@@ -142,13 +116,10 @@ class Location(models.Model):
     random = RandomManager()
 
     def __str__(self):
-        '''Override model string method.'''
         return self.location
 
 
 class Board(models.Model):
-
-    '''Main storage for board.'''
 
     class Meta:
         unique_together = ('name', 'description')
@@ -165,13 +136,10 @@ class Board(models.Model):
     random = RandomManager()
 
     def __str__(self):
-        '''Override model string method.'''
         return self.name
 
 
 class Comment(models.Model):
-
-    '''Main storage for comment.'''
 
     class Meta:
         unique_together = ('comment', 'category')
@@ -187,13 +155,10 @@ class Comment(models.Model):
     random = RandomManager()
 
     def __str__(self):
-        '''Override model string method.'''
         return self.comment
 
 
 class Keyword(models.Model):
-
-    '''Main storage for keyword.'''
 
     class Meta:
         unique_together = ('keyword', 'category')
@@ -209,11 +174,10 @@ class Keyword(models.Model):
     random = RandomManager()
 
     def __str__(self):
-        '''Override model string method.'''
         return self.keyword
 
     def url(self):
-        '''Return search query url for keyword.'''
+        '''Return pinterest keyword search query.'''
         return 'https://www.pinterest.com/search/?q={}'.format(
             self.keyword.replace(' ', '+')
         )

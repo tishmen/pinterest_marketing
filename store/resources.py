@@ -8,16 +8,12 @@ from store.models import (
 
 class CustomResource(resources.ModelResource):
 
-    '''Custom resource class containing dehydrate id functionality.'''
-
     def dehydrate_id(self, keyword):
-        '''Remove id values on export.'''
+        '''Dehydrate id value on export.'''
         return ''
 
 
 class EmailResource(CustomResource):
-
-    '''Resource class for email.'''
 
     class Meta:
         model = Email
@@ -26,16 +22,12 @@ class EmailResource(CustomResource):
 
 class ProxyResource(CustomResource):
 
-    '''Resource class for proxy.'''
-
     class Meta:
         model = Proxy
         exclude = ('added_at', )
 
 
 class UserAgentResource(CustomResource):
-
-    '''Resource class for user agent.'''
 
     class Meta:
         model = UserAgent
@@ -44,16 +36,12 @@ class UserAgentResource(CustomResource):
 
 class FirstNameResource(CustomResource):
 
-    '''Resource class for first name.'''
-
     class Meta:
         model = FirstName
         exclude = ('added_at', )
 
 
 class LastNameResource(CustomResource):
-
-    '''Resource class for first name.'''
 
     class Meta:
         model = LastName
@@ -62,16 +50,12 @@ class LastNameResource(CustomResource):
 
 class AboutResource(CustomResource):
 
-    '''Resource class for about user.'''
-
     class Meta:
         model = About
         exclude = ('added_at', )
 
 
 class LocationResource(CustomResource):
-
-    '''Resource class for location.'''
 
     class Meta:
         model = Location
@@ -80,8 +64,6 @@ class LocationResource(CustomResource):
 
 class BoardResource(CustomResource):
 
-    '''Resource class for board.'''
-
     class Meta:
         model = Board
         exclude = ('added_at', )
@@ -89,16 +71,12 @@ class BoardResource(CustomResource):
 
 class CommentResource(CustomResource):
 
-    '''Resource class for comment.'''
-
     class Meta:
         model = Comment
         exclude = ('added_at', )
 
 
 class KeywordResource(CustomResource):
-
-    '''Resource class for keyword.'''
 
     class Meta:
         model = Keyword

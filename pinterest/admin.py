@@ -13,16 +13,12 @@ from pinterest.tasks import (
 
 class BoardInline(admin.StackedInline):
 
-    '''Board inlined to user.'''
-
     model = Board
     extra = 0
 
 
 @admin.register(User)
 class UserAdmin(admin.ModelAdmin):
-
-    '''Admin integration for user.'''
 
     search_fields = ('name', 'username')
     list_display = (
@@ -40,12 +36,12 @@ class UserAdmin(admin.ModelAdmin):
     inlines = (BoardInline, )
 
     def get_message(self, task_name, count):
+        '''Return message for singular or plural selection.'''
         if count == 1:
             return 'Delayed {} for 1 user.'.format(task_name)
         return 'Delayed {} for {} users.'.format(task_name, count)
 
     def login_action(self, request, queryset):
-        '''Admin action for loging pinterest users.'''
         for user in queryset:
             login_task.delay(user)
         self.message_user(
@@ -55,7 +51,6 @@ class UserAdmin(admin.ModelAdmin):
         )
 
     def create_user_action(self, request, queryset):
-        '''Admin action for creating pinterest users.'''
         queryset = queryset.filter(cookies='[]')
         for user in queryset:
             create_user_task.delay(user)
@@ -66,7 +61,6 @@ class UserAdmin(admin.ModelAdmin):
         )
 
     def interact_action(self, request, queryset):
-        '''Admin action for interacting with pinterest users.'''
         queryset = queryset.exclude(cookies='[]')
         for user in queryset:
             interact_task.delay(user)
@@ -77,7 +71,6 @@ class UserAdmin(admin.ModelAdmin):
         )
 
     def confirm_email_action(self, request, queryset):
-        '''Admin action for confirming pinterest email.'''
         queryset = queryset.exclude(cookies='[]')
         for user in queryset:
             confirm_email_task.delay(user)
@@ -88,7 +81,6 @@ class UserAdmin(admin.ModelAdmin):
         )
 
     def create_boards_action(self, request, queryset):
-        '''Admin action for creating pinterest boards.'''
         queryset = queryset.exclude(cookies='[]')
         for user in queryset:
             create_boards_task.delay(user)
@@ -99,7 +91,6 @@ class UserAdmin(admin.ModelAdmin):
         )
 
     def sync_action(self, request, queryset):
-        '''Admin action for syncing pinterest users.'''
         queryset = queryset.exclude(cookies='[]')
         for user in queryset:
             sync_task.delay(user)
@@ -110,7 +101,6 @@ class UserAdmin(admin.ModelAdmin):
         )
 
     def like_action(self, request, queryset):
-        '''Admin action for liking random pinterest pins.'''
         queryset = queryset.exclude(cookies='[]')
         for user in queryset:
             like_task.delay(user)
@@ -121,7 +111,6 @@ class UserAdmin(admin.ModelAdmin):
         )
 
     def comment_action(self, request, queryset):
-        '''Admin action for commenting on random pinterest pins.'''
         queryset = queryset.exclude(cookies='[]')
         for user in queryset:
             comment_task.delay(user)
@@ -132,7 +121,6 @@ class UserAdmin(admin.ModelAdmin):
         )
 
     def repin_action(self, request, queryset):
-        '''Admin action for repinning random pinterest pins.'''
         queryset = queryset.exclude(cookies='[]')
         for user in queryset:
             repin_task.delay(user)
@@ -143,7 +131,6 @@ class UserAdmin(admin.ModelAdmin):
         )
 
     def follow_action(self, request, queryset):
-        '''Admin action for following random pinterest users.'''
         queryset = queryset.exclude(cookies='[]')
         for user in queryset:
             follow_task.delay(user)
@@ -154,7 +141,6 @@ class UserAdmin(admin.ModelAdmin):
         )
 
     def unfollow_action(self, request, queryset):
-        '''Admin action for unfollowing random pinterest users.'''
         queryset = queryset.exclude(cookies='[]')
         for user in queryset:
             unfollow_task.delay(user)
@@ -185,8 +171,6 @@ class UserAdmin(admin.ModelAdmin):
 
 @admin.register(Board)
 class BoardAdmin(admin.ModelAdmin):
-
-    '''Admin integration for board.'''
 
     search_fields = ('name', )
     list_filter = ('category', 'description')

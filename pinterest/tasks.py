@@ -20,8 +20,6 @@ log = logging.getLogger('pinterest_marketing')
 
 class ResourceException(Exception):
 
-    '''Exception for failed resource acquisition.'''
-
     pass
 
 
@@ -63,7 +61,7 @@ def interact_task(self, user):
 
 @shared_task(bind=True, max_retries=1)
 def confirm_email_task(self, user):
-    '''Celery task for confirming pinterest email.'''
+    '''Celery task for confirming pinterest user.'''
     try:
         mailbox = MailBox()
         mailbox.login(user.email)
@@ -103,7 +101,7 @@ def create_boards_task(self, user):
 
 @shared_task(bind=True, max_retries=1)
 def sync_task(self, user):
-    '''Celery task for syncing pinterest user with local database.'''
+    '''Celery task for syncing pinterest user with database.'''
     try:
         boards = user.board_set.all()
         with lock(user.id):
@@ -225,53 +223,41 @@ def unfollow_task(self, user):
 
 @shared_task(bind=True)
 def sync_periodic_task(self, user):
-    '''Periodic celery task for syncing pinterest users.'''
-    countdown = random.randint(50, 100)
-    for user in User.available.all():
-        countdown += random.randint(50, 100)
-        sync_task.apply_async((user, ), countdown=countdown)
+    '''Periodic celery task for syncing pinterest users to database.'''
+    for user in User.random.all():
+        sync_task.delay(user)
 
 
 @shared_task(bind=True)
 def repin_periodic_task(self, user):
-    '''Periodic celery task for repining random users.'''
-    countdown = random.randint(50, 100)
-    for user in User.available.all():
-        countdown += random.randint(50, 100)
-        repin_task.apply_async((user, ), countdown=countdown)
+    '''Periodic celery task for repining random pins.'''
+    for user in User.random.all():
+        repin_task.delay(user)
 
 
 @shared_task(bind=True)
 def like_periodic_task(self, user):
-    '''Periodic celery task for liking random users.'''
-    countdown = random.randint(50, 100)
-    for user in User.available.all():
-        countdown += random.randint(50, 100)
-        like_task.apply_async((user, ), countdown=countdown)
+    '''Periodic celery task for liking random pins.'''
+    for user in User.random.all():
+        like_task.delay(user)
 
 
 @shared_task(bind=True)
 def comment_periodic_task(self, user):
-    '''Periodic celery task for commenting on random users.'''
-    countdown = random.randint(50, 100)
-    for user in User.available.all():
-        countdown += random.randint(50, 100)
-        comment_task.apply_async((user, ), countdown=countdown)
+    '''Periodic celery task for commenting on random pins.'''
+    for user in User.random.all():
+        comment_task.delay(user)
 
 
 @shared_task(bind=True)
 def follow_periodic_task(self, user):
     '''Periodic celery task for following random users.'''
-    countdown = random.randint(50, 100)
-    for user in User.available.all():
-        countdown += random.randint(50, 100)
-        follow_task.apply_async((user, ), countdown=countdown)
+    for user in User.random.all():
+        follow_task.delay(user)
 
 
 @shared_task(bind=True)
 def unfollow_periodic_task(self, user):
     '''Periodic celery task for unfollowing random users.'''
-    countdown = random.randint(50, 100)
-    for user in User.available.all():
-        countdown += random.randint(50, 100)
-        unfollow_task.apply_async((user, ), countdown=countdown)
+    for user in User.random.all():
+        unfollow_task.delay(user)
