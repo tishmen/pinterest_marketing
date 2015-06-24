@@ -25,8 +25,8 @@ INSTALLED_APPS = (
     'constance',
     'djcelery',
     'import_export',
-    'pinterest',
-    'store',
+    'bot',
+    'data',
 )
 
 MIDDLEWARE_CLASSES = (

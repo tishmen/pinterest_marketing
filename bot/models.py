@@ -35,9 +35,9 @@ class RandomManager(models.Manager):
 
 class User(models.Model):
 
-    proxy = models.OneToOneField('store.Proxy', null=True, blank=True)
-    user_agent = models.ForeignKey('store.UserAgent')
-    email = models.OneToOneField('store.Email')
+    proxy = models.OneToOneField('data.Proxy', null=True, blank=True)
+    user_agent = models.ForeignKey('data.UserAgent')
+    email = models.OneToOneField('data.Email')
     password = models.CharField(max_length=10)
     name = models.TextField()
     age = models.PositiveIntegerField()

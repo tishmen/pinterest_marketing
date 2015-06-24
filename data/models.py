@@ -1,6 +1,6 @@
 from django.db import models
 
-from pinterest.models import CATEGORIES, User
+from bot.models import CATEGORIES, User
 
 
 class RandomEmailManager(models.Manager):
@@ -31,8 +31,10 @@ class RandomManager(models.Manager):
 
 class Email(models.Model):
 
+    host = models.TextField()
+    port = models.PositiveIntegerField()
     address = models.EmailField(unique=True)
-    password = models.CharField(max_length=10)
+    password = models.TextField()
     added_at = models.DateTimeField(auto_now_add=True)
 
     objects = models.Manager()

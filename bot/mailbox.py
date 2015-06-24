@@ -17,10 +17,10 @@ class MailBox(object):
 
     def login(self, email):
         '''Login to imap server.'''
-        self.imap = imaplib.IMAP4_SSL('imap.mail.yahoo.com', 993)
+        self.imap = imaplib.IMAP4_SSL(email.host, email.port)
         self.imap.login(email.address, email.password)
-        self.imap.select('"Inbox"')
-        log.debug('Loged in to imap.mail.yahoo.com as %s', email.address)
+        self.imap.select('Inbox')
+        log.debug('Loged in to %s as %s', email.host, email.address)
 
     def get_html(self):
         '''Parse message for html content.'''
@@ -28,11 +28,10 @@ class MailBox(object):
         try:
             message_id = ids[0].decode('utf-8').split()[-1]
         except IndexError:
-            raise EmailException('Confirmation email not found')
+            log.error('Confirmation email not found')
+            raise EmailException
         _, message = self.imap.fetch(message_id, '(RFC822)')
-        for part in email.message_from_bytes(message).walk():
-            if part.get_content_type() == 'text/html':
-                return part.get_payload()
+        return email.message_from_bytes(message[0][1]).get_payload()
 
     def get_link(self):
         '''Parse html for confirmation link.'''

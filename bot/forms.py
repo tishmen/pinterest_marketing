@@ -1,7 +1,7 @@
 from django import forms
 
-from pinterest.models import User
-from store.models import (
+from bot.models import User
+from data.models import (
     About, Email, FirstName, LastName, Location, Proxy, UserAgent
 )
 

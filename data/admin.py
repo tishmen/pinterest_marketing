@@ -3,11 +3,11 @@ from django.contrib import admin
 from django.db import models
 from import_export.admin import ImportExportModelAdmin
 
-from store.models import (
+from data.models import (
     About, Board, Comment, Email, FirstName, Keyword, LastName, Location,
     Proxy, UserAgent
 )
-from store.resources import (
+from data.resources import (
     AboutResource, BoardResource, CommentResource, EmailResource,
     FirstNameResource, KeywordResource, LastNameResource, LocationResource,
     ProxyResource, UserAgentResource
@@ -19,6 +19,7 @@ class EmailAdmin(ImportExportModelAdmin, admin.ModelAdmin):
 
     resource_class = EmailResource
     search_fields = ('address', )
+    formfield_overrides = {models.TextField: {'widget': forms.TextInput}}
 
 
 @admin.register(Proxy)

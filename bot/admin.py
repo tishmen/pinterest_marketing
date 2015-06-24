@@ -2,9 +2,9 @@ from django import forms
 from django.contrib import admin, messages
 from django.db import models
 
-from pinterest.forms import UserAdminForm
-from pinterest.models import Board, User
-from pinterest.tasks import (
+from bot.forms import UserAdminForm
+from bot.models import Board, User
+from bot.tasks import (
     comment_task, confirm_email_task, create_boards_task, create_user_task,
     follow_task, interact_task, like_task, login_task, repin_task, sync_task,
     unfollow_task

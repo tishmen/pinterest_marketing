@@ -1,6 +1,6 @@
 from import_export import resources
 
-from store.models import (
+from data.models import (
     About, Board, Comment, Email, FirstName, Keyword, LastName, Location,
     Proxy, UserAgent
 )
