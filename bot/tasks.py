@@ -12,8 +12,8 @@ from bot.scripts import (
     FollowScript, InteractScript, LikeScript, LoginScript, RepinScript,
     SyncScript, UnfollowScript
 )
-from pinterest_marketing.lock import LockException, lock
 from data.models import Board, Comment, Keyword
+from pinterest_marketing.lock import LockException, lock
 
 log = logging.getLogger('pinterest_marketing')
 
