@@ -222,42 +222,42 @@ def unfollow_task(self, user):
 
 
 @shared_task(bind=True)
-def sync_periodic_task(self, user):
+def sync_periodic_task(self):
     '''Periodic celery task for syncing pinterest users to database.'''
     for user in User.random.all():
         sync_task.delay(user)
 
 
 @shared_task(bind=True)
-def repin_periodic_task(self, user):
+def repin_periodic_task(self):
     '''Periodic celery task for repining random pins.'''
     for user in User.random.all():
         repin_task.delay(user)
 
 
 @shared_task(bind=True)
-def like_periodic_task(self, user):
+def like_periodic_task(self):
     '''Periodic celery task for liking random pins.'''
     for user in User.random.all():
         like_task.delay(user)
 
 
 @shared_task(bind=True)
-def comment_periodic_task(self, user):
+def comment_periodic_task(self):
     '''Periodic celery task for commenting on random pins.'''
     for user in User.random.all():
         comment_task.delay(user)
 
 
 @shared_task(bind=True)
-def follow_periodic_task(self, user):
+def follow_periodic_task(self):
     '''Periodic celery task for following random users.'''
     for user in User.random.all():
         follow_task.delay(user)
 
 
 @shared_task(bind=True)
-def unfollow_periodic_task(self, user):
+def unfollow_periodic_task(self):
     '''Periodic celery task for unfollowing random users.'''
     for user in User.random.all():
         unfollow_task.delay(user)

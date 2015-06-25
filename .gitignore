@@ -4,6 +4,8 @@ migrations
 *.sublime-project
 *.sublime-workspace
 log
+celerybeat.pid
+celeryev.pid
 import
 photo
 error
