@@ -1,7 +1,7 @@
 from django import forms
 from django.contrib import admin
 from django.db import models
-from import_export.admin import ImportExportModelAdmin
+from import_export.admin import ImportMixin
 
 from data.models import (
     About, Board, Comment, Email, FirstName, Keyword, LastName, Location,
@@ -15,21 +15,22 @@ from data.resources import (
 
 
 @admin.register(Email)
-class EmailAdmin(ImportExportModelAdmin, admin.ModelAdmin):
+class EmailAdmin(ImportMixin, admin.ModelAdmin):
 
     resource_class = EmailResource
     search_fields = ('address', )
+    list_filter = ('host', )
     formfield_overrides = {models.TextField: {'widget': forms.TextInput}}
 
 
 @admin.register(Proxy)
-class ProxyAdmin(ImportExportModelAdmin, admin.ModelAdmin):
+class ProxyAdmin(ImportMixin, admin.ModelAdmin):
 
     resource_class = ProxyResource
 
 
 @admin.register(UserAgent)
-class UserAgentAdmin(ImportExportModelAdmin, admin.ModelAdmin):
+class UserAgentAdmin(ImportMixin, admin.ModelAdmin):
 
     resource_class = UserAgentResource
     search_fields = ('string', )
@@ -37,7 +38,7 @@ class UserAgentAdmin(ImportExportModelAdmin, admin.ModelAdmin):
 
 
 @admin.register(FirstName)
-class FirstNameAdmin(ImportExportModelAdmin, admin.ModelAdmin):
+class FirstNameAdmin(ImportMixin, admin.ModelAdmin):
 
     resource_class = FirstNameResource
     search_fields = ('name', )
@@ -45,7 +46,7 @@ class FirstNameAdmin(ImportExportModelAdmin, admin.ModelAdmin):
 
 
 @admin.register(LastName)
-class LastNameAdmin(ImportExportModelAdmin, admin.ModelAdmin):
+class LastNameAdmin(ImportMixin, admin.ModelAdmin):
 
     resource_class = LastNameResource
     search_fields = ('name', )
@@ -53,14 +54,14 @@ class LastNameAdmin(ImportExportModelAdmin, admin.ModelAdmin):
 
 
 @admin.register(About)
-class AboutAdmin(ImportExportModelAdmin, admin.ModelAdmin):
+class AboutAdmin(ImportMixin, admin.ModelAdmin):
 
     resource_class = AboutResource
     search_fields = ('about', )
 
 
 @admin.register(Location)
-class LocationAdmin(ImportExportModelAdmin, admin.ModelAdmin):
+class LocationAdmin(ImportMixin, admin.ModelAdmin):
 
     resource_class = LocationResource
     search_fields = ('location', )
@@ -68,7 +69,7 @@ class LocationAdmin(ImportExportModelAdmin, admin.ModelAdmin):
 
 
 @admin.register(Board)
-class BoardAdmin(ImportExportModelAdmin, admin.ModelAdmin):
+class BoardAdmin(ImportMixin, admin.ModelAdmin):
 
     resource_class = BoardResource
     search_fields = ('name', 'description')
@@ -78,7 +79,7 @@ class BoardAdmin(ImportExportModelAdmin, admin.ModelAdmin):
 
 
 @admin.register(Comment)
-class CommentAdmin(ImportExportModelAdmin, admin.ModelAdmin):
+class CommentAdmin(ImportMixin, admin.ModelAdmin):
 
     resource_class = CommentResource
     search_fields = ('comment', )
@@ -88,7 +89,7 @@ class CommentAdmin(ImportExportModelAdmin, admin.ModelAdmin):
 
 
 @admin.register(Keyword)
-class KeywordAdmin(ImportExportModelAdmin, admin.ModelAdmin):
+class KeywordAdmin(ImportMixin, admin.ModelAdmin):
 
     resource_class = KeywordResource
     search_fields = ('keyword', )

@@ -4,6 +4,6 @@ migrations
 *.sublime-project
 *.sublime-workspace
 log
-import_export
+import
 photo
 error

@@ -2,11 +2,13 @@ import os
 
 import djcelery
 
+from django.contrib import messages
+
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
-PHOTO_DIR = os.path.join(BASE_DIR, 'store', 'photo')
+PHOTO_DIR = os.path.join(BASE_DIR, 'data', 'photo')
 
-ERROR_DIR = os.path.join(BASE_DIR, 'pinterest', 'error')
+ERROR_DIR = os.path.join(BASE_DIR, 'bot', 'error')
 
 SECRET_KEY = '(zj-3#0@5z=_lnm!!%+$u4oqy=msid9*2dy9_un3-uwb^v^766'
 
@@ -15,6 +17,7 @@ DEBUG = True
 ALLOWED_HOSTS = []
 
 INSTALLED_APPS = (
+    'django_admin_bootstrapped',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -45,7 +48,7 @@ ROOT_URLCONF = 'pinterest_marketing.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        'DIRS': [os.path.join(BASE_DIR, 'templates')],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -101,12 +104,15 @@ LOGGING = {
     }
 }
 
-BROKER_URL = 'redis://localhost:6379/0'
-CELERY_RESULT_BACKEND = 'redis://localhost:6379/0'
-CELERY_SEND_EVENTS = True
-CELERYBEAT_SCHEDULER = 'djcelery.schedulers.DatabaseScheduler'
+DAB_FIELD_RENDERER = (
+    'django_admin_bootstrapped.renderers.BootstrapFieldRenderer'
+)
 
-djcelery.setup_loader()
+MESSAGE_TAGS = {
+            messages.SUCCESS: 'alert-success success',
+            messages.WARNING: 'alert-warning warning',
+            messages.ERROR: 'alert-danger error'
+}
 
 CONSTANCE_CONFIG = {
     'MINIMUM_REPIN_COUNT': (1, 'Minimum repin count for pin'),
@@ -126,3 +132,10 @@ CONSTANCE_CONFIG = {
     'MINIMUM_UNFOLLOW': (1, 'Minimum unfollows per task run'),
     'MAXIMUM_UNFOLLOW': (1, 'Maximum unfollows per task run'),
 }
+
+BROKER_URL = 'redis://localhost:6379/0'
+CELERY_RESULT_BACKEND = 'redis://localhost:6379/0'
+CELERY_SEND_EVENTS = True
+CELERYBEAT_SCHEDULER = 'djcelery.schedulers.DatabaseScheduler'
+
+djcelery.setup_loader()
