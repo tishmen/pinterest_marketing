@@ -83,16 +83,18 @@
                     </tr>
                 {% endfor %}
             </table>
-            <p class="paginator">
-            <input type="submit" name="_save" class="default" value="{% trans 'Save' %}"/>
-            </p>
+            <div class="form-actions">
+              <div class="pull-right">
+                <input type="submit" name="_save" class="default btn btn-primary" value="{% trans 'Save' %}"/>
+              </div>
+            </div>
         </form>
     </div>
   </div>
 {% endblock %}
 
 {% block breadcrumbs %}
-<div class="breadcrumbs">
+<div class="breadcrumb">
 <a href="{% url 'admin:index' %}">{% trans 'Home' %}</a>
 &rsaquo; <a href="{% url 'admin:app_list' app_label=opts.app_label %}">{{ app_label|capfirst|escape }}</a>
 &rsaquo; {{ opts.verbose_name_plural|capfirst }}
