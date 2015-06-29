@@ -443,7 +443,7 @@ class ScrapeScript(Browser):
     def __init__(self):
         self.parser = Parser()
 
-    def save_pin(self, keyword, pin):
+    def save_pin(self, category, pin):
         '''Save pinterest pin to database.'''
         _, created = Pin.objects.get_or_create(category=category, **pin)
         if created:

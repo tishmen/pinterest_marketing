@@ -3,6 +3,7 @@ migrations
 *.pyc
 *.sublime-project
 *.sublime-workspace
+*.sqlite3
 log
 celerybeat.pid
 celeryev.pid

@@ -70,12 +70,8 @@ WSGI_APPLICATION = 'pinterest_marketing.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.postgresql_psycopg2',
-        'NAME': 'pinterest_marketing_database',
-        'USER': 'pinterest_marketing_database_user',
-        'PASSWORD': 'R)+.,n9_\$u"-f`}',
-        'HOST': 'localhost',
-        'PORT': '',
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
     }
 }
 
@@ -128,6 +124,10 @@ CONSTANCE_CONFIG = {
     'MAXIMUM_UNFOLLOW': (1, 'Maximum unfollows per task run'),
     'MINIMUM_SCRAPE': (1, 'Minimum scrapes per task run'),
     'MAXIMUM_SCRAPE': (1, 'Maximum scrapes per task run'),
+}
+
+SUIT_CONFIG = {
+    'ADMIN_NAME': 'Pinterest Marketing',
 }
 
 BROKER_URL = 'redis://localhost:6379/0'
