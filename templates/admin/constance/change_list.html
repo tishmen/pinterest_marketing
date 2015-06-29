@@ -1,35 +1,21 @@
 {% extends "admin/base_site.html" %}
-{% load admin_static admin_list i18n %}
+{% load i18n admin_static admin_list admin_urls suit_list suit_tags %}
 {% load url from future %}
-
 
 {% block extrastyle %}
   {{ block.super }}
-  <link rel="stylesheet" type="text/css" href="{% static 'admin/css/changelists.css' %}" />
-  <link rel="stylesheet" type="text/css" href="{% static 'admin/css/forms.css' %}" />
+  {#  <link rel="stylesheet" type="text/css" href="{% static "admin/css/changelists.css" %}" />#}
+  {% if cl.formset %}
+    {#    <link rel="stylesheet" type="text/css" href="{% static "admin/css/forms.css" %}" />#}
+  {% endif %}
+  {% if cl.formset or action_form %}
+    {% url 'admin:jsi18n' as jsi18nurl %}
+    <script type="text/javascript" src="{{ jsi18nurl|default:'../../jsi18n/' }}"></script>
+  {% endif %}
   {{ media.css }}
-  <style>
-    #result_list .changed {
-          background-color: #ffc;
-    }
-    #changelist table thead th .text {
-      padding: 2px 5px;
-    }
-    #changelist table tbody td:first-child {
-        text-align: left;
-    }
-    #changelist-form ul.errorlist {
-      margin: 0 !important;
-    }
-    .help {
-        font-weight: normal !important;
-  }
-  </style>
 {% endblock %}
 
 {% block extrahead %}
-{% url 'admin:jsi18n' as jsi18nurl %}
-<script type="text/javascript" src="{{ jsi18nurl|default:'../../jsi18n/' }}"></script>
 {{ block.super }}
 {{ media.js }}
 {% endblock %}
@@ -37,6 +23,7 @@
 {% block bodyclass %}change-list{% endblock %}
 
 {% block content %}
+
   <div id="content-main">
     <div class="module" id="changelist">
         <form id="changelist-form" action="" method="post">{% csrf_token %}
@@ -52,49 +39,48 @@
             {% if form.errors %}
             </ul>
             {% endif %}
-            <table id="result_list" class="table table-striped table-bordered">
+            <table id="result_list" class="table table-bordered table-hover table-condensed table-striped">
                 <thead>
                 <tr>
-                    <th><div class="text">{% trans "Name" %}</div></th>
-                    <th><div class="text">{% trans "Default" %}</div></th>
-                    <th><div class="text">{% trans "Value" %}</div></th>
-                    <th><div class="text">{% trans "Is modified" %}</div></th>
+                    <th>{% trans "Name" %}</th>
+                    <th>{% trans "Default" %}</th>
+                    <th>{% trans "Value" %}</th>
+                    <th>{% trans "Is modified" %}</th>
                 </tr>
                 </thead>
-                {% for item in config %}
-                <tr class="{% cycle 'row1' 'row2' %}">
-                    <th>{{ item.name }}
-                        <div class="help">{{ item.help_text }}</div>
-                    </th>
-                    <td>
-                        {{ item.default }}
-                    </td>
-                        <td>
-                            {{ item.form_field.errors }}
-                            {{ item.form_field }}
-                        </td>
-                    <td>
-                        {% if item.modified %}
-                            <img src="{% static 'admin/img/icon-yes.gif' %}" alt="{{ item.modified }}" />
-                        {% else %}
-                            <img src="{% static 'admin/img/icon-no.gif' %}" alt="{{ item.modified }}" />
-                        {% endif %}
-                    </td>
-                    </tr>
-                {% endfor %}
+                <tbody>
+                  {% for item in config %}
+                  <tr class="{% cycle 'row1' 'row2' %}">
+                      <th>
+                          <strong>{{ item.name }}</strong>
+                          <div class="help">{{ item.help_text }}</div>
+                      </th>
+                      <td>
+                          {{ item.default }}
+                      </td>
+                          <td>
+                              {{ item.form_field.errors }}
+                              {{ item.form_field }}
+                          </td>
+                      <td>
+                          {% if item.modified %}
+                              <img src="{% static 'admin/img/icon-yes.gif' %}" alt="{{ item.modified }}" />
+                          {% else %}
+                              <img src="{% static 'admin/img/icon-no.gif' %}" alt="{{ item.modified }}" />
+                          {% endif %}
+                      </td>
+                      </tr>
+                  {% endfor %}
+                </tbody>
             </table>
-            <div class="form-actions">
-              <div class="pull-right">
-                <input type="submit" name="_save" class="default btn btn-primary" value="{% trans 'Save' %}"/>
-              </div>
-            </div>
+            <input type="submit" name="_save" class="btn btn-success" value="{% trans 'Save' %}"/>
         </form>
     </div>
   </div>
 {% endblock %}
 
 {% block breadcrumbs %}
-<div class="breadcrumb">
+<div class="breadcrumbs">
 <a href="{% url 'admin:index' %}">{% trans 'Home' %}</a>
 &rsaquo; <a href="{% url 'admin:app_list' app_label=opts.app_label %}">{{ app_label|capfirst|escape }}</a>
 &rsaquo; {{ opts.verbose_name_plural|capfirst }}

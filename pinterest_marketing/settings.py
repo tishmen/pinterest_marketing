@@ -2,7 +2,8 @@ import os
 
 import djcelery
 
-from django.contrib import messages
+from django.conf.global_settings import TEMPLATE_CONTEXT_PROCESSORS as TCP
+
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
@@ -17,7 +18,7 @@ DEBUG = True
 ALLOWED_HOSTS = []
 
 INSTALLED_APPS = (
-    'django_admin_bootstrapped',
+    'suit',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -61,6 +62,10 @@ TEMPLATES = [
     },
 ]
 
+TEMPLATE_CONTEXT_PROCESSORS = TCP + (
+    'django.core.context_processors.request',
+)
+
 WSGI_APPLICATION = 'pinterest_marketing.wsgi.application'
 
 DATABASES = {
@@ -102,16 +107,6 @@ LOGGING = {
             'level': 'DEBUG',
         }
     }
-}
-
-DAB_FIELD_RENDERER = (
-    'django_admin_bootstrapped.renderers.BootstrapFieldRenderer'
-)
-
-MESSAGE_TAGS = {
-            messages.SUCCESS: 'alert-success success',
-            messages.WARNING: 'alert-warning warning',
-            messages.ERROR: 'alert-danger error'
 }
 
 CONSTANCE_CONFIG = {
