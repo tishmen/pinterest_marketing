@@ -125,7 +125,7 @@ CONSTANCE_CONFIG = {
 }
 
 SUIT_CONFIG = {
-    'ADMIN_NAME': 'Pinterest',
+    'ADMIN_NAME': 'Pinterest Marketing',
 }
 
 BROKER_URL = 'redis://localhost:6379/0'
