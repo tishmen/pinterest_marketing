@@ -127,24 +127,3 @@ class Board(models.Model):
         return 'https://www.pinterest.com/{}/{}'.format(
             self.user, self.name.replace(' ', '-').lower()[:50]
         )
-
-
-class Pin(models.Model):
-
-    category = models.CharField(
-        max_length=21,
-        choices=((category, category) for category in CATEGORIES)
-    )
-    id = models.BigIntegerField(primary_key=True)
-    title = models.TextField()
-    description = models.TextField()
-    link = models.URLField(max_length=2000)
-    image = models.URLField(unique=True)
-    image_signature = models.CharField(max_length=32, unique=True)
-    repin_count = models.PositiveIntegerField()
-    like_count = models.PositiveIntegerField()
-    comment_count = models.PositiveIntegerField()
-    added_at = models.DateTimeField(auto_now_add=True)
-
-    def __str__(self):
-        return self.title

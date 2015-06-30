@@ -4,7 +4,7 @@ import random
 from selenium.common.exceptions import WebDriverException
 
 from bot.browser import Browser
-from bot.models import Board, Pin
+from bot.models import Board
 from bot.parser import Parser
 from bot.selectors import *
 
@@ -430,32 +430,6 @@ class UnfollowScript(Browser):
             self.get_url(user.following_url())
             self.click_pinners()
             self.click_unfollows(count)
-        except WebDriverException:
-            self.save_screenshot(user)
-            self.save_source(user)
-            raise
-        finally:
-            self.destroy(user)
-
-
-class ScrapeScript(Browser):
-
-    def __init__(self):
-        self.parser = Parser()
-
-    def save_pin(self, category, pin):
-        '''Save pinterest pin to database.'''
-        _, created = Pin.objects.get_or_create(category=category, **pin)
-        if created:
-            log.debug('Saved pin %s', pin['id'])
-
-    def __call__(self, user, keywords):
-        try:
-            self.set_up(user)
-            for keyword in keywords:
-                self.get_url(keyword.url())
-                for pin_data in self.parser.get_pins_data(self.get_json()):
-                    self.save_pin(keyword.category, pin_data)
         except WebDriverException:
             self.save_screenshot(user)
             self.save_source(user)

@@ -3,11 +3,11 @@ from django.contrib import admin, messages
 from django.db import models
 
 from bot.forms import UserAdminForm
-from bot.models import Board, User, Pin
+from bot.models import Board, User
 from bot.tasks import (
     comment_task, confirm_email_task, create_boards_task, create_user_task,
     follow_task, interact_task, like_task, login_task, repin_task, sync_task,
-    unfollow_task, scrape_task
+    unfollow_task
 )
 
 
@@ -29,7 +29,7 @@ class UserAdmin(admin.ModelAdmin):
         'login_action', 'create_user_action', 'interact_action',
         'confirm_email_action', 'create_boards_action', 'sync_action',
         'repin_action', 'like_action', 'comment_action', 'follow_action',
-        'unfollow_action', 'scrape_action'
+        'unfollow_action',
     )
     form = UserAdminForm
     formfield_overrides = {models.TextField: {'widget': forms.TextInput}}
@@ -150,16 +150,6 @@ class UserAdmin(admin.ModelAdmin):
             level=messages.SUCCESS
         )
 
-    def scrape_action(self, request, queryset):
-        queryset = queryset.exclude(cookies='[]')
-        for user in queryset:
-            scrape_task.delay(user)
-        self.message_user(
-            request,
-            self.get_message('scrape_task', queryset.count()),
-            level=messages.SUCCESS
-        )
-
     login_action.short_description = 'login_task for selected users'
     create_user_action.short_description = (
         'create_user_task for selected users'
@@ -177,7 +167,6 @@ class UserAdmin(admin.ModelAdmin):
     repin_action.short_description = 'repin_task for selected users'
     follow_action.short_description = 'follow_task for selected users'
     unfollow_action.short_description = 'unfollow_task for selected users'
-    scrape_action.short_description = 'scrape_task for selected users'
 
 
 @admin.register(Board)
@@ -189,14 +178,3 @@ class BoardAdmin(admin.ModelAdmin):
         'name', 'description', 'category', 'user', 'pin_count',
         'follower_count'
     )
-
-
-@admin.register(Pin)
-class PinAdmin(admin.ModelAdmin):
-
-    search_fields = ('name', )
-    list_filter = ('title', 'description')
-    list_display = (
-        'title', 'description', 'repin_count', 'like_count', 'comment_count'
-    )
-    formfield_overrides = {models.TextField: {'widget': forms.TextInput}}

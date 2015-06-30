@@ -10,7 +10,7 @@ from bot.models import User
 from bot.scripts import (
     CommentScript, ConfirmEmailScript, CreateBoardsScript, CreateUserScript,
     FollowScript, InteractScript, LikeScript, LoginScript, RepinScript,
-    SyncScript, UnfollowScript, ScrapeScript
+    SyncScript, UnfollowScript
 )
 from data.models import Board, Comment, Keyword
 from pinterest_marketing.lock import LockException, lock
@@ -221,26 +221,6 @@ def unfollow_task(self, user):
         raise
 
 
-@shared_task(bind=True, max_retries=1)
-def scrape_task(self, user):
-    '''Celery task for scraping random pins.'''
-    try:
-        count = random.randint(config.MINIMUM_SCRAPE, config.MAXIMUM_SCRAPE)
-        keywords = Keyword.random.all()[:count]
-        if not keywords:
-            raise ResourceException(
-                'No keyword resources for {}'.format(self.name)
-            )
-        with lock(user.id):
-            ScrapeScript()(user, keywords)
-    except LockException:
-        log.warn('Retrying %s %d time', self.name, self.request.retries)
-        self.retry(countdown=100)
-    except Exception:
-        log.error('Traceback: %s', traceback.format_exc())
-        raise
-
-
 @shared_task(bind=True)
 def sync_periodic_task(self):
     '''Periodic celery task for syncing pinterest users to database.'''
@@ -281,10 +261,3 @@ def unfollow_periodic_task(self):
     '''Periodic celery task for unfollowing random users.'''
     for user in User.random.all():
         unfollow_task.delay(user)
-
-
-@shared_task(bind=True)
-def scrape_periodic_task(self):
-    '''Periodic celery task for scraping random pins.'''
-    for user in User.random.all():
-        scrape_task.delay(user)

@@ -122,12 +122,10 @@ CONSTANCE_CONFIG = {
     'MAXIMUM_FOLLOW': (1, 'Maximum follows per task run'),
     'MINIMUM_UNFOLLOW': (1, 'Minimum unfollows per task run'),
     'MAXIMUM_UNFOLLOW': (1, 'Maximum unfollows per task run'),
-    'MINIMUM_SCRAPE': (1, 'Minimum scrapes per task run'),
-    'MAXIMUM_SCRAPE': (1, 'Maximum scrapes per task run'),
 }
 
 SUIT_CONFIG = {
-    'ADMIN_NAME': 'Pinterest Marketing',
+    'ADMIN_NAME': 'Pinterest',
 }
 
 BROKER_URL = 'redis://localhost:6379/0'
