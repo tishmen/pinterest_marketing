@@ -19,7 +19,6 @@ CATEGORIES = [
 class RandomUserManager(models.Manager):
 
     def get_queryset(self):
-        '''Return available users in random order.'''
         queryset = super(RandomUserManager, self).get_queryset()
         return queryset.exclude(cookies='[]').order_by('?')
 
@@ -27,7 +26,6 @@ class RandomUserManager(models.Manager):
 class RandomManager(models.Manager):
 
     def get_queryset(self):
-        '''Return rows in random order.'''
         queryset = super(RandomManager, self).get_queryset()
         return queryset.order_by('?')
 
@@ -57,30 +55,25 @@ class User(models.Model):
 
     @staticmethod
     def get_name(first, last):
-        '''Return full name.'''
         if first and last:
             return '{} {}'.format(first, last)
 
     @staticmethod
     def get_age():
-        '''Return random age.'''
         return random.randint(20, 60)
 
     @staticmethod
     def get_password():
-        '''Return random password.'''
         alphanumerics = string.ascii_letters + string.digits
         return ''.join(random.choice(alphanumerics) for _ in range(10))
 
     @staticmethod
     def get_username(name, age):
-        '''Return username.'''
         if name:
             return '{}{}'.format(name.replace(' ', '').lower()[:11], age)
 
     @staticmethod
     def get_photo():
-        '''Return available photo.'''
         photos = [
             os.path.join(settings.PHOTO_DIR, f)
             for f in os.listdir(settings.PHOTO_DIR)
@@ -94,11 +87,9 @@ class User(models.Model):
         return self.username
 
     def url(self):
-        '''Return pinterest user url'''
         return 'https://www.pinterest.com/{}/'.format(self.username)
 
     def following_url(self):
-        '''Return pinterest user following url'''
         return 'https://www.pinterest.com/{}/following/'.format(self.username)
 
 
@@ -125,7 +116,6 @@ class Board(models.Model):
         return self.name
 
     def url(self):
-        '''Return pinterest board url'''
         return 'https://www.pinterest.com/{}/{}'.format(
             self.user, self.name.replace(' ', '-').lower()[:50]
         )

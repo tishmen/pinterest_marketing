@@ -6,7 +6,6 @@ from constance import config
 class Parser(object):
 
     def get_user_data(self, json):
-        '''Return user data.'''
         data = json['resourceDataCache'][0]['data']
         return {
             'board_count': data['board_count'],
@@ -17,7 +16,6 @@ class Parser(object):
         }
 
     def get_board_data(self, json):
-        '''Return board data.'''
         data = json['resourceDataCache'][0]['data']
         return {
             'pin_count': data['pin_count'],
@@ -25,7 +23,6 @@ class Parser(object):
         }
 
     def get_pin_repins_url(self, json):
-        '''Return pin repins url.'''
         url = 'https://www.pinterest.com/pin/{}/repins/'
         urls = []
         for result in json['resourceDataCache'][0]['data']['results']:
@@ -36,7 +33,6 @@ class Parser(object):
         return random.choice(urls)
 
     def get_pin_urls(self, json):
-        '''Return list of pin urls.'''
         url = 'https://www.pinterest.com/pin/{}/'
         urls = []
         for result in json['resourceDataCache'][0]['data']['results']:
@@ -48,7 +44,6 @@ class Parser(object):
         return urls
 
     def get_user_urls(self, json):
-        '''Return list of user urls.'''
         url = 'https://www.pinterest.com/{}/'
         urls = []
         for result in json['resourceDataCache'][0]['data']:

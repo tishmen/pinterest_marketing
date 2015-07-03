@@ -19,7 +19,6 @@ class UserAdminForm(forms.ModelForm):
         super(UserAdminForm, self).__init__(*args, **kwargs)
 
     def get_initial(self):
-        '''Return user initial values dict.'''
         name = User.get_name(FirstName.random.first(), LastName.random.first())
         age = User.get_age()
         return {

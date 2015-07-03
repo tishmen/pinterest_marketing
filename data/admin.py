@@ -20,7 +20,6 @@ class EmailAdmin(ImportMixin, admin.ModelAdmin):
 
     resource_class = EmailResource
     search_fields = ('address', )
-    list_filter = ('host', )
     formfield_overrides = {models.TextField: {'widget': forms.TextInput}}
 
 
@@ -76,7 +75,6 @@ class BoardAdmin(ImportMixin, admin.ModelAdmin):
     search_fields = ('name', 'description')
     list_filter = ('category', )
     list_display = ('name', 'description', 'category')
-    formfield_overrides = {models.TextField: {'widget': forms.TextInput}}
 
 
 @admin.register(Comment)
@@ -86,7 +84,6 @@ class CommentAdmin(ImportMixin, admin.ModelAdmin):
     search_fields = ('comment', )
     list_filter = ('category', )
     list_display = ('comment', 'category')
-    formfield_overrides = {models.TextField: {'widget': forms.TextInput}}
 
 
 @admin.register(Keyword)

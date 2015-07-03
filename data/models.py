@@ -1,3 +1,4 @@
+
 from django.db import models
 
 from bot.models import CATEGORIES, User
@@ -6,7 +7,6 @@ from bot.models import CATEGORIES, User
 class RandomEmailManager(models.Manager):
 
     def get_queryset(self):
-        '''Return available emails in random order.'''
         ids = [user.email.id for user in User.objects.all()]
         queryset = super(RandomEmailManager, self).get_queryset()
         return queryset.exclude(id__in=ids).order_by('?')
@@ -15,7 +15,6 @@ class RandomEmailManager(models.Manager):
 class RandomProxyManager(models.Manager):
 
     def get_queryset(self):
-        '''Return available proxies in random order.'''
         ids = [user.proxy.id for user in User.objects.all() if user.proxy]
         queryset = super(RandomProxyManager, self).get_queryset()
         return queryset.exclude(id__in=ids).order_by('?')
@@ -24,7 +23,6 @@ class RandomProxyManager(models.Manager):
 class RandomManager(models.Manager):
 
     def get_queryset(self):
-        '''Return rows in random order.'''
         queryset = super(RandomManager, self).get_queryset()
         return queryset.order_by('?')
 
@@ -126,8 +124,8 @@ class Board(models.Model):
     class Meta:
         unique_together = ('name', 'description')
 
-    name = models.TextField()
-    description = models.TextField()
+    name = models.CharField(max_length=100)
+    description = models.CharField(max_length=500)
     category = models.CharField(
         max_length=21,
         choices=((category, category) for category in CATEGORIES)
@@ -146,7 +144,7 @@ class Comment(models.Model):
     class Meta:
         unique_together = ('comment', 'category')
 
-    comment = models.TextField()
+    comment = models.CharField(max_length=500)
     category = models.CharField(
         max_length=21,
         choices=((category, category) for category in CATEGORIES)
@@ -179,7 +177,6 @@ class Keyword(models.Model):
         return self.keyword
 
     def url(self):
-        '''Return pinterest keyword search query.'''
         return 'https://www.pinterest.com/search/?q={}'.format(
             self.keyword.replace(' ', '+')
         )
