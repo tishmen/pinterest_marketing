@@ -6,77 +6,70 @@ from .models import (
 )
 
 
-class CustomResource(resources.ModelResource):
-
-    def dehydrate_id(self, keyword):
-        '''Dehydrate id value on export.'''
-        return ''
-
-
-class EmailResource(CustomResource):
+class EmailResource(resources.ModelResource):
 
     class Meta:
         model = Email
         exclude = ('added_at', )
 
 
-class ProxyResource(CustomResource):
+class ProxyResource(resources.ModelResource):
 
     class Meta:
         model = Proxy
         exclude = ('added_at', )
 
 
-class UserAgentResource(CustomResource):
+class UserAgentResource(resources.ModelResource):
 
     class Meta:
         model = UserAgent
         exclude = ('added_at', )
 
 
-class FirstNameResource(CustomResource):
+class FirstNameResource(resources.ModelResource):
 
     class Meta:
         model = FirstName
         exclude = ('added_at', )
 
 
-class LastNameResource(CustomResource):
+class LastNameResource(resources.ModelResource):
 
     class Meta:
         model = LastName
         exclude = ('added_at', )
 
 
-class AboutResource(CustomResource):
+class AboutResource(resources.ModelResource):
 
     class Meta:
         model = About
         exclude = ('added_at', )
 
 
-class LocationResource(CustomResource):
+class LocationResource(resources.ModelResource):
 
     class Meta:
         model = Location
         exclude = ('added_at', )
 
 
-class BoardResource(CustomResource):
+class BoardResource(resources.ModelResource):
 
     class Meta:
         model = Board
         exclude = ('added_at', )
 
 
-class CommentResource(CustomResource):
+class CommentResource(resources.ModelResource):
 
     class Meta:
         model = Comment
         exclude = ('added_at', )
 
 
-class KeywordResource(CustomResource):
+class KeywordResource(resources.ModelResource):
 
     class Meta:
         model = Keyword

@@ -26,7 +26,7 @@ class UserAdmin(admin.ModelAdmin):
     )
     actions = (
         'login_action', 'create_user_action', 'interact_action',
-        'confirm_email_action', 'create_boards_action', 'sync_action',
+        'confirm_action', 'create_boards_action', 'sync_action',
         'repin_action', 'like_action', 'comment_action', 'follow_action',
         'unfollow_action',
     )
@@ -57,7 +57,7 @@ class UserAdmin(admin.ModelAdmin):
         create_user_task = CreateUserTask()
         for user in queryset:
             create_user_task.delay(user)
-        self.message_success('CreateUserTask', queryset.count())
+        self.show_message('CreateUserTask', queryset.count())
 
     def interact_action(self, request, queryset):
         queryset = queryset.exclude(cookies='[]')
