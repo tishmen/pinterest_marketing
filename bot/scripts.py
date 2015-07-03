@@ -28,7 +28,8 @@ class LoginScript(Browser):
         '''Click event on login button.'''
         self.click('login', self.get_element('login'))
 
-    def __call__(self, user):
+    @staticmethod
+    def run(self, user):
         try:
             self.set_up(user)
             self.get_url('https://www.pinterest.com/login/')
@@ -132,7 +133,8 @@ class CreateUserScript(Browser):
         '''Click event on save settings button.'''
         self.click('save_settings', self.get_element('save_settings'))
 
-    def __call__(self, user):
+    @staticmethod
+    def run(self, user):
         try:
             self.set_up(user)
             self.get_url('http://www.pinterest.com/')
@@ -171,7 +173,8 @@ class CreateUserScript(Browser):
 
 class InteractScript(Browser):
 
-    def __call__(self, user):
+    @staticmethod
+    def run(self, user):
         try:
             self.set_up(user)
             self.get_url('https://www.pinterest.com/')
@@ -183,7 +186,8 @@ class InteractScript(Browser):
 
 class ConfirmEmailScript(Browser):
 
-    def __call__(self, user, url):
+    @staticmethod
+    def run(self, user, url):
         try:
             self.set_up(user)
             self.get_url(url)
@@ -234,7 +238,8 @@ class CreateBoardsScript(Browser):
         )
         log.debug('Saved board %s', board)
 
-    def __call__(self, user, boards):
+    @staticmethod
+    def run(self, user, boards):
         try:
             self.set_up(user)
             for board in boards:
@@ -273,7 +278,8 @@ class SyncScript(Browser):
         board.save()
         log.debug('Updated board %s', board)
 
-    def __call__(self, user, boards):
+    @staticmethod
+    def run(self, user, boards):
         try:
             self.set_up(user)
             self.get_url(user.url())
@@ -308,7 +314,8 @@ class RepinScript(Browser):
                 self.click('board', board)
                 break
 
-    def __call__(self, user, keyword, board, count):
+    @staticmethod
+    def run(self, user, keyword, board, count):
         try:
             self.set_up(user)
             self.get_url(keyword.url())
@@ -336,7 +343,8 @@ class LikeScript(Browser):
         if like.text == 'Like':
             self.click('like', like)
 
-    def __call__(self, user, keyword, count):
+    @staticmethod
+    def run(self, user, keyword, count):
         try:
             self.set_up(user)
             self.get_url(keyword.url())
@@ -365,7 +373,8 @@ class CommentScript(Browser):
         '''Click event on comment button.'''
         self.click('comment', self.get_element('comment_button'))
 
-    def __call__(self, user, keyword, comments, count):
+    @staticmethod
+    def run(self, user, keyword, comments, count):
         try:
             self.set_up(user)
             self.get_url(keyword.url())
@@ -393,7 +402,8 @@ class FollowScript(Browser):
         if follow.text == 'Follow':
             self.click('follow', follow)
 
-    def __call__(self, user, keyword, count):
+    @staticmethod
+    def run(self, user, keyword, count):
         try:
             self.set_up(user)
             self.get_url(keyword.url())
@@ -424,7 +434,8 @@ class UnfollowScript(Browser):
             if unfollow.text == 'Unfollow':
                 self.click('unfollow', unfollow)
 
-    def __call__(self, user, count):
+    @staticmethod
+    def run(self, user, count):
         try:
             self.set_up(user)
             self.get_url(user.following_url())

@@ -29,7 +29,7 @@ def login_task(self, user):
     '''Celery task for loging pinterest user.'''
     try:
         with lock(user.id):
-            LoginScript()(user)
+            LoginScript.run(user)
     except LockException:
         log.warn('Retrying %s %d time', self.name, self.request.retries)
         self.retry(countdown=100)
@@ -43,7 +43,7 @@ def create_user_task(self, user):
     '''Celery task for creating pinterest user.'''
     try:
         with lock(user.id):
-            CreateUserScript()(user)
+            CreateUserScript.run(user)
     except Exception:
         log.error('Traceback: %s', traceback.format_exc())
         raise
@@ -54,7 +54,7 @@ def interact_task(self, user):
     '''Celery task for interacting with pinterest user.'''
     try:
         with lock(user.id):
-            InteractScript()(user)
+            InteractScript.run(user)
     except Exception:
         log.error('Traceback: %s', traceback.format_exc())
         raise
@@ -68,7 +68,7 @@ def confirm_email_task(self, user):
         mailbox.login(user.email)
         link = mailbox.get_link()
         with lock(user.id):
-            ConfirmEmailScript()(user, link)
+            ConfirmEmailScript.run(user, link)
     except EmailException:
         log.warn('Retrying %s %d time', self.name, self.request.retries)
         self.retry(countdown=500)
@@ -91,7 +91,7 @@ def create_boards_task(self, user):
                 'No board resources for {}'.format(self.name)
             )
         with lock(user.id):
-            CreateBoardsScript()(user, boards)
+            CreateBoardsScript.run(user, boards)
     except LockException:
         log.warn('Retrying %s %d time', self.name, self.request.retries)
         self.retry(countdown=100)
@@ -106,7 +106,7 @@ def sync_task(self, user):
     try:
         boards = user.board_set.all()
         with lock(user.id):
-            SyncScript()(user, boards)
+            SyncScript.run(user, boards)
     except LockException:
         log.warn('Retrying %s %d time', self.name, self.request.retries)
         self.retry(countdown=100)
@@ -131,7 +131,7 @@ def repin_task(self, user):
             )
         count = random.randint(config.MINIMUM_REPIN, config.MAXIMUM_REPIN)
         with lock(user.id):
-            RepinScript()(user, keyword, board, count)
+            RepinScript.run(user, keyword, board, count)
     except LockException:
         log.warn('Retrying %s %d time', self.name, self.request.retries)
         self.retry(countdown=100)
@@ -151,7 +151,7 @@ def like_task(self, user):
             )
         count = random.randint(config.MINIMUM_LIKE, config.MAXIMUM_LIKE)
         with lock(user.id):
-            LikeScript()(user, keyword, count)
+            LikeScript.run(user, keyword, count)
     except LockException:
         log.warn('Retrying %s %d time', self.name, self.request.retries)
         self.retry(countdown=100)
@@ -176,7 +176,7 @@ def comment_task(self, user):
             )
         count = random.randint(config.MINIMUM_COMMENT, config.MAXIMUM_COMMENT)
         with lock(user.id):
-            CommentScript()(user, keyword, comments, count)
+            CommentScript.run(user, keyword, comments, count)
     except LockException:
         log.warn('Retrying %s %d time', self.name, self.request.retries)
         self.retry(countdown=100)
@@ -196,7 +196,7 @@ def follow_task(self, user):
             )
         count = random.randint(config.MINIMUM_FOLLOW, config.MAXIMUM_FOLLOW)
         with lock(user.id):
-            FollowScript()(user, keyword, count)
+            FollowScript.run(user, keyword, count)
     except LockException:
         log.warn('Retrying %s %d time', self.name, self.request.retries)
         self.retry(countdown=100)
@@ -213,7 +213,7 @@ def unfollow_task(self, user):
             config.MINIMUM_UNFOLLOW, config.MAXIMUM_UNFOLLOW
         )
         with lock(user.id):
-            UnfollowScript()(user, count)
+            UnfollowScript.run(user, count)
     except LockException:
         log.warn('Retrying %s %d time', self.name, self.request.retries)
         self.retry(countdown=100)
