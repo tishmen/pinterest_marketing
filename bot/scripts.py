@@ -3,10 +3,10 @@ import random
 
 from selenium.common.exceptions import WebDriverException
 
-from bot.browser import Browser
-from bot.models import Board
-from bot.parser import Parser
-from bot.selectors import *
+from .browser import Browser
+from .models import Board
+from .parser import Parser
+from .selectors import *
 
 log = logging.getLogger('pinterest_marketing')
 

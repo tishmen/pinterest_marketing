@@ -8,7 +8,7 @@ import time
 from selenium import webdriver
 from selenium.webdriver.support.ui import Select
 
-from pinterest_marketing.settings import ERROR_DIR
+from django.conf import settings
 
 log = logging.getLogger('pinterest_marketing')
 
@@ -88,12 +88,12 @@ class Browser(object):
     def save_screenshot(self, user):
         '''Save screenshot to disk.'''
         file = '{}_{}.png'.format(user, time.strftime('%Y_%m_%d_%H_%M_%S'))
-        path = os.path.join(ERROR_DIR, file)
+        path = os.path.join(settings.ERROR_DIR, file)
         self.browser.get_screenshot_as_file(path)
 
     def save_source(self, user):
         '''Save page source to disk.'''
         file = '{}_{}.html'.format(user, time.strftime('%Y_%m_%d_%H_%M_%S'))
-        path = os.path.join(ERROR_DIR, file)
+        path = os.path.join(settings.ERROR_DIR, file)
         with open(path, 'w') as file:
             file.write(self.browser.page_source)

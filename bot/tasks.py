@@ -5,15 +5,16 @@ import traceback
 from celery import shared_task
 from constance import config
 
-from bot.mailbox import EmailException, MailBox
-from bot.models import User
-from bot.scripts import (
+from data.models import Board, Comment, Keyword
+from pinterest_marketing.lock import LockException, lock
+
+from .mailbox import EmailException, MailBox
+from .models import User
+from .scripts import (
     CommentScript, ConfirmEmailScript, CreateBoardsScript, CreateUserScript,
     FollowScript, InteractScript, LikeScript, LoginScript, RepinScript,
     SyncScript, UnfollowScript
 )
-from data.models import Board, Comment, Keyword
-from pinterest_marketing.lock import LockException, lock
 
 log = logging.getLogger('pinterest_marketing')
 

@@ -1,9 +1,10 @@
 from django import forms
 
-from bot.models import User
 from data.models import (
     About, Email, FirstName, LastName, Location, Proxy, UserAgent
 )
+
+from .models import User
 
 
 class UserAdminForm(forms.ModelForm):

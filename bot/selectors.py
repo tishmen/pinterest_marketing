@@ -1,5 +1,6 @@
 from selenium.webdriver.common.by import By
 
+
 LOGIN_SELECTORS = {
     'email': (By.CSS_SELECTOR, '.email'),
     'password': (By.CSS_SELECTOR, '.loginPassword input'),

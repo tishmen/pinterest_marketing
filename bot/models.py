@@ -3,8 +3,7 @@ import random
 import string
 
 from django.db import models
-
-from pinterest_marketing.settings import PHOTO_DIR
+from django.conf import settings
 
 CATEGORIES = [
     'animals', 'architecture', 'art', 'cars_motorcycles', 'celebrities',
@@ -42,7 +41,7 @@ class User(models.Model):
     name = models.TextField()
     age = models.PositiveIntegerField()
     username = models.CharField(max_length=15, unique=True)
-    photo = models.FilePathField(path=PHOTO_DIR, unique=True)
+    photo = models.FilePathField(path=settings.PHOTO_DIR, unique=True)
     about = models.CharField(max_length=160)
     location = models.TextField()
     cookies = models.TextField(default='[]')
@@ -82,7 +81,10 @@ class User(models.Model):
     @staticmethod
     def get_photo():
         '''Return available photo.'''
-        photos = [os.path.join(PHOTO_DIR, f) for f in os.listdir(PHOTO_DIR)]
+        photos = [
+            os.path.join(settings.PHOTO_DIR, f)
+            for f in os.listdir(settings.PHOTO_DIR)
+        ]
         bound = [user.photo for user in User.objects.all()]
         available = [photo for photo in photos if photo not in bound]
         if available:
