@@ -50,77 +50,77 @@ class UserAdmin(admin.ModelAdmin):
         login_task = LoginTask()
         for user in queryset:
             login_task.delay(user)
-        self.show_message('LoginTask', queryset.count())
+        self.show_message(request, 'LoginTask', queryset.count())
 
     def create_user_action(self, request, queryset):
         queryset = queryset.filter(cookies='[]')
         create_user_task = CreateUserTask()
         for user in queryset:
             create_user_task.delay(user)
-        self.show_message('CreateUserTask', queryset.count())
+        self.show_message(request, 'CreateUserTask', queryset.count())
 
     def interact_action(self, request, queryset):
         queryset = queryset.exclude(cookies='[]')
         interact_task = InteractTask()
         for user in queryset:
             interact_task.delay(user)
-        self.show_message('InteractTask', queryset.count())
+        self.show_message(request, 'InteractTask', queryset.count())
 
     def confirm_action(self, request, queryset):
         queryset = queryset.exclude(cookies='[]')
         confirm_task = ConfirmTask()
         for user in queryset:
             confirm_task.delay(user)
-        self.show_message('ConfirmTask', queryset.count())
+        self.show_message(request, 'ConfirmTask', queryset.count())
 
     def create_boards_action(self, request, queryset):
         queryset = queryset.exclude(cookies='[]')
         create_boards_task = CreateBoardsTask()
         for user in queryset:
             create_boards_task.delay(user)
-        self.show_message('CreateBoardsTask', queryset.count())
+        self.show_message(request, 'CreateBoardsTask', queryset.count())
 
     def sync_action(self, request, queryset):
         queryset = queryset.exclude(cookies='[]')
         sync_task = SyncTask()
         for user in queryset:
             sync_task.delay(user)
-        self.show_message('SyncTask', queryset.count())
+        self.show_message(request, 'SyncTask', queryset.count())
 
     def like_action(self, request, queryset):
         queryset = queryset.exclude(cookies='[]')
         like_task = LikeTask()
         for user in queryset:
             like_task.delay(user)
-        self.show_message('LikeTask', queryset.count())
+        self.show_message(request, 'LikeTask', queryset.count())
 
     def comment_action(self, request, queryset):
         queryset = queryset.exclude(cookies='[]')
         comment_task = CommentTask()
         for user in queryset:
             comment_task.delay(user)
-        self.show_message('CommentTask', queryset.count())
+        self.show_message(request, 'CommentTask', queryset.count())
 
     def repin_action(self, request, queryset):
         queryset = queryset.exclude(cookies='[]')
         repin_task = RepinTask()
         for user in queryset:
             repin_task.delay(user)
-        self.show_message('RepinTask', queryset.count())
+        self.show_message(request, 'RepinTask', queryset.count())
 
     def follow_action(self, request, queryset):
         queryset = queryset.exclude(cookies='[]')
         follow_task = FollowTask()
         for user in queryset:
             follow_task.delay(user)
-        self.show_message('FollowTask', queryset.count())
+        self.show_message(request, 'FollowTask', queryset.count())
 
     def unfollow_action(self, request, queryset):
         queryset = queryset.exclude(cookies='[]')
         unfollow_task = UnfollowTask()
         for user in queryset:
             unfollow_task.delay(user)
-        self.show_message('UnfollowTask', queryset.count())
+        self.show_message(request, 'UnfollowTask', queryset.count())
 
     login_action.short_description = 'LoginTask for selected users'
     create_user_action.short_description = 'CreateUserTask for selected users'
