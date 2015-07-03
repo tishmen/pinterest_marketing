@@ -8,7 +8,7 @@ from .models import Board
 from .parser import Parser
 from .selectors import *
 
-log = logging.getLogger('pinterest_marketing')
+log = logging.getLogger('app')
 
 
 class LoginScript(Browser):

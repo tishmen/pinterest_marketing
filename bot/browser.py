@@ -10,7 +10,7 @@ from selenium.webdriver.support.ui import Select
 
 from django.conf import settings
 
-log = logging.getLogger('pinterest_marketing')
+log = logging.getLogger('app')
 
 
 class Browser(object):

@@ -16,7 +16,7 @@ from .scripts import (
     SyncScript, UnfollowScript
 )
 
-log = logging.getLogger('pinterest_marketing')
+log = logging.getLogger('app')
 
 
 class ResourceException(Exception):
@@ -257,15 +257,17 @@ class PeriodicTask(Task):
 
     abstract = True
 
+    def get_countdown(self, countdown=0):
+        return (
+            countdown +
+            random.randint(config.MINIMUM_COUNTDOWN, config.MAXIMUM_COUNTDOWN)
+        )
+
     def run(self, task):
         '''Run set of tasks with incrementing countdown.'''
-        countdown = random.randint(
-            config.MINIMUM_COUNTDOWN, config.MAXIMUM_COUNTDOWN
-        )
+        countdown = self.get_countdown()
         for user in User.random.all():
-            countdown += random.randint(
-                config.MINIMUM_COUNTDOWN, config.MAXIMUM_COUNTDOWN
-            )
+            countdown = self.get_countdown(countdown)
             task.apply_async((user), countdown=countdown)
 
 
@@ -296,5 +298,4 @@ def follow_periodic_task(self):
 
 @shared_task(bind=True, base=PeriodicTask)
 def unfollow_periodic_task(self):
-    '''Periodic celery task for unfollowing random users.'''
     self.run(UnfollowTask())

@@ -5,7 +5,7 @@ import quopri
 
 from bs4 import BeautifulSoup
 
-log = logging.getLogger('pinterest_marketing')
+log = logging.getLogger('app')
 
 
 class EmailException(Exception):

@@ -98,7 +98,7 @@ LOGGING = {
         },
     },
     'loggers': {
-        'pinterest_marketing': {
+        'app': {
             'handlers': ['file'],
             'level': 'DEBUG',
         }

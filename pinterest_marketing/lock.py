@@ -2,7 +2,7 @@ import logging
 
 import redis
 
-log = logging.getLogger('pinterest_marketing')
+log = logging.getLogger('app')
 
 
 class LockException(Exception):
