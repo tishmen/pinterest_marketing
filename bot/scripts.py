@@ -184,7 +184,7 @@ class InteractScript(Browser):
             raise
 
 
-class ConfirmEmailScript(Browser):
+class ConfirmScript(Browser):
 
     @staticmethod
     def run(self, user, url):

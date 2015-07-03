@@ -5,9 +5,8 @@ from django.db import models
 from .forms import UserAdminForm
 from .models import Board, User
 from .tasks import (
-    comment_task, confirm_email_task, create_boards_task, create_user_task,
-    follow_task, interact_task, like_task, login_task, repin_task, sync_task,
-    unfollow_task
+    CommentTask, ConfirmTask, CreateBoardsTask, CreateUserTask, FollowTask,
+    InteractTask, LikeTask, LoginTask, RepinTask, SyncTask, UnfollowTask
 )
 
 
@@ -42,131 +41,138 @@ class UserAdmin(admin.ModelAdmin):
         return 'Delayed {} for {} users.'.format(task_name, count)
 
     def login_action(self, request, queryset):
+        login_task = LoginTask()
         for user in queryset:
             login_task.delay(user)
         self.message_user(
             request,
-            self.get_message('login_task', queryset.count()),
+            self.get_message('LoginTask', queryset.count()),
             level=messages.SUCCESS
         )
 
     def create_user_action(self, request, queryset):
         queryset = queryset.filter(cookies='[]')
+        create_user_task = CreateUserTask()
         for user in queryset:
             create_user_task.delay(user)
         self.message_user(
             request,
-            self.get_message('create_user_task', queryset.count()),
+            self.get_message('CreateUserTask', queryset.count()),
             level=messages.SUCCESS
         )
 
     def interact_action(self, request, queryset):
         queryset = queryset.exclude(cookies='[]')
+        interact_task = InteractTask()
         for user in queryset:
             interact_task.delay(user)
         self.message_user(
             request,
-            self.get_message('interact_task', queryset.count()),
+            self.get_message('InteractTask', queryset.count()),
             level=messages.SUCCESS
         )
 
     def confirm_email_action(self, request, queryset):
         queryset = queryset.exclude(cookies='[]')
+        confirm_task = ConfirmTask()
         for user in queryset:
-            confirm_email_task.delay(user)
+            confirm_task.delay(user)
         self.message_user(
             request,
-            self.get_message('confirm_email_task', queryset.count()),
+            self.get_message('ConfirmTask', queryset.count()),
             level=messages.SUCCESS
         )
 
     def create_boards_action(self, request, queryset):
         queryset = queryset.exclude(cookies='[]')
+        create_boards_task = CreateBoardsTask()
         for user in queryset:
             create_boards_task.delay(user)
         self.message_user(
             request,
-            self.get_message('create_boards_task', queryset.count()),
+            self.get_message('CreateBoardsTask', queryset.count()),
             level=messages.SUCCESS
         )
 
     def sync_action(self, request, queryset):
         queryset = queryset.exclude(cookies='[]')
+        sync_task = SyncTask()
         for user in queryset:
             sync_task.delay(user)
         self.message_user(
             request,
-            self.get_message('sync_task', queryset.count()),
+            self.get_message('SyncTask', queryset.count()),
             level=messages.SUCCESS
         )
 
     def like_action(self, request, queryset):
         queryset = queryset.exclude(cookies='[]')
+        like_task = LikeTask()
         for user in queryset:
             like_task.delay(user)
         self.message_user(
             request,
-            self.get_message('like_task', queryset.count()),
+            self.get_message('LikeTask', queryset.count()),
             level=messages.SUCCESS
         )
 
     def comment_action(self, request, queryset):
         queryset = queryset.exclude(cookies='[]')
+        comment_task = CommentTask()
         for user in queryset:
             comment_task.delay(user)
         self.message_user(
             request,
-            self.get_message('comment_task', queryset.count()),
+            self.get_message('CommentTask', queryset.count()),
             level=messages.SUCCESS
         )
 
     def repin_action(self, request, queryset):
         queryset = queryset.exclude(cookies='[]')
+        repin_task = RepinTask()
         for user in queryset:
             repin_task.delay(user)
         self.message_user(
             request,
-            self.get_message('repin_task', queryset.count()),
+            self.get_message('RepinTask', queryset.count()),
             level=messages.SUCCESS
         )
 
     def follow_action(self, request, queryset):
         queryset = queryset.exclude(cookies='[]')
+        follow_task = FollowTask()
         for user in queryset:
             follow_task.delay(user)
         self.message_user(
             request,
-            self.get_message('follow_task', queryset.count()),
+            self.get_message('FollowTask', queryset.count()),
             level=messages.SUCCESS
         )
 
     def unfollow_action(self, request, queryset):
         queryset = queryset.exclude(cookies='[]')
+        unfollow_task = UnfollowTask()
         for user in queryset:
             unfollow_task.delay(user)
         self.message_user(
             request,
-            self.get_message('unfollow_task', queryset.count()),
+            self.get_message('UnfollowTask', queryset.count()),
             level=messages.SUCCESS
         )
 
-    login_action.short_description = 'login_task for selected users'
-    create_user_action.short_description = (
-        'create_user_task for selected users'
-    )
-    interact_action.short_description = 'interact_task for selected users'
-    confirm_email_action.short_description = (
-        'confirm_email_task for selected users'
-    )
+    login_action.short_description = 'LoginTask for selected users'
+    create_user_action.short_description = 'CreateUserTask for selected users'
+    interact_action.short_description = 'InteractTask for selected users'
+    confirm_email_action.short_description = 'ConfirmTask for selected users'
     create_boards_action.short_description = (
-        'create_boards_task for selected users'
+        'CreateBoardsTask for selected users'
     )
-    sync_action.short_description = 'sync_task for selected users'
-    like_action.short_description = 'like_task for selected users'
-    comment_action.short_description = 'comment_task for selected users'
-    repin_action.short_description = 'repin_task for selected users'
-    follow_action.short_description = 'follow_task for selected users'
-    unfollow_action.short_description = 'unfollow_task for selected users'
+    sync_action.short_description = 'SyncTask for selected users'
+    like_action.short_description = 'LikeTask for selected users'
+    comment_action.short_description = 'CommentTask for selected users'
+    repin_action.short_description = 'RepinTask for selected users'
+    follow_action.short_description = 'FollowTask for selected users'
+    unfollow_action.short_description = 'UnfollowTask for selected users'
 
 
 @admin.register(Board)
